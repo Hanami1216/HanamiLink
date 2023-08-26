@@ -40,10 +40,12 @@ dependencies {
     //Google Material控件,以及迁移到AndroidX下一些控件的依赖
     implementation 'com.google.android.material:material:1.0.0'
     //RecyclerView最好的适配器，让你的适配器一目了然，告别代码冗余
-    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
+//    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
+    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.34'
     //XXPermissions权限请求框架
     implementation 'com.github.getActivity:XXPermissions:18.3'
 
+    implementation 'androidx.recyclerview:recyclerview:1.3.1'
 
-
+    implementation 'com.google.android.material:material:1.0.0'
 }
