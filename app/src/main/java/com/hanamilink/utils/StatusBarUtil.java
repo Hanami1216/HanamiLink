@@ -1,4 +1,4 @@
-package com.hanamilink.util;
+package com.hanamilink.utils;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
