@@ -37,8 +37,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
     //子模块
-//    implementation project(path: ':devicemanager')
-//    implementation project(path: ':utils')
+    implementation project(path: ':devicemanager')
+    implementation project(path: ':utils')
 
     // Nordic的库对不同系统版本做了兼容，直接用
     implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
