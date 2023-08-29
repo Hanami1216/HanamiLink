@@ -36,9 +36,15 @@ dependencies {
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.5'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
+    //子模块
+//    implementation project(path: ':devicemanager')
+//    implementation project(path: ':utils')
+
+    // Nordic的库对不同系统版本做了兼容，直接用
+    implementation 'no.nordicsemi.android.support.v18:scanner:1.6.0'
 
     //Google Material控件,以及迁移到AndroidX下一些控件的依赖
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.9.0'
     //RecyclerView最好的适配器，让你的适配器一目了然，告别代码冗余
 //    implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.30'
     implementation 'com.github.CymChad:BaseRecyclerViewAdapterHelper:2.9.34'
@@ -47,5 +53,5 @@ dependencies {
 
     implementation 'androidx.recyclerview:recyclerview:1.3.1'
 
-    implementation 'com.google.android.material:material:1.0.0'
+    implementation 'com.google.android.material:material:1.9.0'
 }
