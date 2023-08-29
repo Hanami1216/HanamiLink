@@ -1,5 +1,5 @@
--keep public class com.bluetrum.devicemanager.**
--keep public class com.bluetrum.devicemanager.** {public protected *;}
+-keep public class com.hanamiLink.devicemanager.**
+-keep public class com.hanamiLink.devicemanager.** {public protected *;}
 
 # Room
 -keep class * extends androidx.room.RoomDatabase
