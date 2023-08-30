@@ -11,7 +11,6 @@ import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
-import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanResult;
 import android.bluetooth.le.ScanSettings;
 import android.content.Context;
@@ -26,8 +25,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.hanamiLink.utils.BlePrefUtil;
-import com.hanamiLink.utils.Utils;
-import com.hanamiLink.ble.DevStatus;
+import com.hanamiLink.utils.BLEUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -40,7 +38,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
 @SuppressLint("MissingPermission")
@@ -712,7 +709,7 @@ public class BLEDeviceManager {
             if (device != null && data != null && device.getCharacteristicWrite() != null && device.getBluetoothGatt() != null) {
                 device.getCharacteristicWrite().setValue(data);
                 device.getBluetoothGatt().writeCharacteristic(device.getCharacteristicWrite());
-                Log.e(TAG, "send data:" + Utils.bytesToHexString(data));
+                Log.e(TAG, "send data:" + BLEUtils.bytesToHexString(data));
             }
 
         }
@@ -821,9 +818,9 @@ public class BLEDeviceManager {
                         int property = gattCharacteristic.getProperties();
                         int writeType = gattCharacteristic.getWriteType();
                         Log.e(TAG, "-->Characteristic uuid:" + gattCharacteristic.getUuid());
-                        Log.e(TAG, "-->Characteristic DescPermission:" + Utils.getDescPermission(property));
-                        Log.e(TAG, "-->Characteristic permission:" + Utils.getCharPermission(permission));
-                        Log.e(TAG, "-->Characteristic property:" + Utils.getCharPropertie(property));
+                        Log.e(TAG, "-->Characteristic DescPermission:" + BLEUtils.getDescPermission(property));
+                        Log.e(TAG, "-->Characteristic permission:" + BLEUtils.getCharPermission(permission));
+                        Log.e(TAG, "-->Characteristic property:" + BLEUtils.getCharPropertie(property));
                         if (gattCharacteristic.getUuid() != null && this.bleBaseAdapter != null && gattCharacteristic.getUuid().toString().startsWith(this.bleBaseAdapter.deviceUUID4CharacteristicNotify())) {
                             device.setCharacteristicNotify(gattCharacteristic);
                             this.setCharacteristicNotification(device, true, gatt);

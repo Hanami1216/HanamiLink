@@ -18,6 +18,19 @@ android {
         }
     }
 
+    /*
+    productFlavors {
+        flavor_Hanami_Link {
+            applicationId "com.hanami.microphone"
+            versionCode 1071
+            versionName "1.0.71"
+            resValue "string", "app_name", "花见 Music"
+            //resValue "bool", "auto_updates", 'true'
+            manifestPlaceholders = [app_icon: "@mipmap/ic_logo"]
+            signingConfig signingConfigs.Hanami_Link_sign
+        }
+    }*/
+
     buildTypes {
         release {
             minifyEnabled true
