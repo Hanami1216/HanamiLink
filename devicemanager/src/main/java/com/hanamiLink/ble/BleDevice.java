@@ -27,12 +27,12 @@ public class BleDevice {
     private BluetoothGatt bluetoothGatt;    // 蓝牙Gatt连接
 
     public BleDevice() {
-        this.status = BleDevice.DevStatus.disable;
+        this.status = DevStatus.disable;
     }
 
     @SuppressLint("MissingPermission")
     public BleDevice(BluetoothGatt gatt) {
-        this.status = BleDevice.DevStatus.disable;
+        this.status = DevStatus.disable;
         this.bluetoothGatt = gatt;
         this.device = gatt.getDevice();
         this.idString = this.device.getAddress();
@@ -40,7 +40,7 @@ public class BleDevice {
     }
 
     public BleDevice(HashMap<String, Object> _paramMap, String _idString) {
-        this.status = BleDevice.DevStatus.disable;
+        this.status = DevStatus.disable;
         this.paramMap = _paramMap;
         this.idString = _idString;
     }
@@ -184,15 +184,5 @@ public class BleDevice {
         this.paramMap.put("key_index", index);
     }
 
-    public enum DevStatus {
-        connecting,
-        connected,
-        disconnect,
-        disable,
-        //设备状态未知或其他状态
-        Unknown;
 
-        private DevStatus() {
-        }
-    }
 }

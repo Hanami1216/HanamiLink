@@ -27,7 +27,7 @@ import androidx.annotation.NonNull;
 
 import com.hanamiLink.utils.BlePrefUtil;
 import com.hanamiLink.utils.Utils;
-import com.hanamiLink.ble.BleDevice.DevStatus;
+import com.hanamiLink.ble.DevStatus;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,34 +46,42 @@ import java.util.concurrent.LinkedBlockingQueue;
 @SuppressLint("MissingPermission")
 public class BLEDeviceManager {
     private static final String TAG = BLEDeviceManager.class.getSimpleName();
-    @SuppressLint("StaticFieldLeak")
-    private static BLEDeviceManager instance;
-    private Context mContext;
-    private BleBaseAdapter bleBaseAdapter;
-    private BluetoothAdapter mBluetoothAdapter;
-    private BluetoothManager mBluetoothManager;
-    private Handler mBleMainHandler = null;
-    private static final int CONNECT_TIMEOUT = 6000;
-    private int deviceConnectCount = 1;
-    private Timer mConnectTimeoutTimer;
-    private TimerTask mConnectTimeoutTask;
-    private Timer mConnectAutoTimer;
-    private TimerTask mConnectAutoTimerTask;
-    public HashMap<String, BleDevice> deviceMapDiscover = new HashMap<>();
-    public HashMap<String, BleDevice> deviceMapConnected = new HashMap<>();
-    BluetoothAdapter.LeScanCallback mLeScanCallback;
-    private BluetoothLeScanner mLeScanner = null;
-    private ScanCallback mBleScanCallback = null;
-    private boolean isBleScanning = false;
-    private String selectedIdString;
-    private Timer delaySendTimer;
-    private TimerTask delaySendTimerTask;
-    private LinkedBlockingQueue<byte[]> delaySendQueue;
-    private LinkedBlockingQueue<String> delaySendIdStringQueue;
-    private final int delaySendPeriod = 300;
-    private final Comparator<BleDevice> deviceComparator = (lhs, rhs) -> (int) (lhs.getIndex() - rhs.getIndex());
-    Runnable disconnectRunnable = null;
+
+    private static BLEDeviceManager instance;  // BLEDeviceManager的单例实例
+    private Context mContext;  // 上下文对象
+    private BleBaseAdapter bleBaseAdapter;  // 蓝牙基础适配器
+    private BluetoothAdapter mBluetoothAdapter;  // 蓝牙适配器
+    private BluetoothManager mBluetoothManager;  // 蓝牙管理器
+    private Handler mBleMainHandler = null;  // 主线程Handler
+    private static final int CONNECT_TIMEOUT = 6000;  // 连接超时时间
+    private int deviceConnectCount = 1;  // 设备连接计数
+    private Timer mConnectTimeoutTimer;  // 连接超时定时器
+    private TimerTask mConnectTimeoutTask;  // 连接超时任务
+    private Timer mConnectAutoTimer;  // 自动连接定时器
+    private TimerTask mConnectAutoTimerTask;  // 自动连接任务
+    public HashMap<String, BleDevice> deviceMapDiscover = new HashMap<>();  // 发现的设备映射表
+    public HashMap<String, BleDevice> deviceMapConnected = new HashMap<>();  // 已连接的设备映射表
+    BluetoothAdapter.LeScanCallback mLeScanCallback;  // 蓝牙扫描回调
+    private BluetoothLeScanner mLeScanner = null;  // 蓝牙扫描器
+    private ScanCallback mBleScanCallback = null;  // 蓝牙扫描回调
+    private boolean isBleScanning = false;  // 是否正在进行蓝牙扫描
+    private String selectedIdString;  // 选定的设备ID字符串
+    private Timer delaySendTimer;  // 延迟发送定时器
+    private TimerTask delaySendTimerTask;  // 延迟发送任务
+    private LinkedBlockingQueue<byte[]> delaySendQueue;  // 延迟发送队列
+    private LinkedBlockingQueue<String> delaySendIdStringQueue;  // 延迟发送设备ID字符串队列
+    private final int delaySendPeriod = 300;  // 延迟发送周期
+    private final Comparator<BleDevice> deviceComparator = (lhs, rhs) -> (int) (lhs.getIndex() - rhs.getIndex());  // 设备比较器
+    Runnable disconnectRunnable = null;  // 断开连接的Runnable任务
+
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
+        /**
+         * 当连接状态发生改变时调用的方法。
+         *
+         * @param gatt    BluetoothGatt对象，表示与远程设备的GATT连接。
+         * @param status  连接状态的状态码。
+         * @param newState 新的连接状态。
+         */
         public void onConnectionStateChange(final BluetoothGatt gatt, int status, int newState) {
             String address;
             BleDevice device;
@@ -116,20 +124,37 @@ public class BLEDeviceManager {
                     BLEDeviceManager.this.bleBaseAdapter.managerDidDisconnect(device);
                 }
             }
-
         }
 
+        /**
+         * 当服务发现完成时调用的方法。
+         *
+         * @param gatt   BluetoothGatt对象，表示与远程设备的GATT连接。
+         * @param status 服务发现的状态码。
+         */
         public void onServicesDiscovered(BluetoothGatt gatt, int status) {
             if (status == 0) {
                 String address = gatt.getDevice().getAddress();
                 BLEDeviceManager.this.displayGattServices(BLEDeviceManager.this.deviceMapConnected.get(address), gatt);
             }
-
         }
 
+        /**
+         * 当特征读取完成时调用的方法。
+         *
+         * @param gatt           BluetoothGatt对象，表示与远程设备的GATT连接。
+         * @param characteristic 被读取的特征。
+         * @param status         读取操作的状态码。
+         */
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
         }
 
+        /**
+         * 当特征值发生改变时调用的方法。
+         *
+         * @param gatt           BluetoothGatt对象，表示与远程设备的GATT连接。
+         * @param characteristic 改变的特征。
+         */
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             String idString = gatt.getDevice().getAddress();
             if (BLEDeviceManager.this.bleBaseAdapter != null) {
@@ -138,132 +163,177 @@ public class BLEDeviceManager {
                     BLEDeviceManager.this.bleBaseAdapter.deviceReceiveDatawithDevice(device, characteristic.getValue());
                 }
             }
-
         }
     };
+
 
     private BLEDeviceManager() {
     }
 
     public static BLEDeviceManager getInstance() {
-        if (instance == null) {
+        if (instance == null) { // 如果实例为空
             Class<BLEDeviceManager> var0 = BLEDeviceManager.class;
-            synchronized (BLEDeviceManager.class) {
-                if (instance == null) {
-                    instance = new BLEDeviceManager();
+            synchronized (BLEDeviceManager.class) { // 同步锁，确保线程安全
+                if (instance == null) { // 双重检查，避免多个线程同时创建实例
+                    instance = new BLEDeviceManager(); // 创建实例
                 }
             }
         }
 
-        return instance;
+        return instance; // 返回实例
     }
 
+    /**
+     * 开始自动重连
+     */
     public void startReconnectAuto() {
+        // 停止之前的自动重连任务
         this.stopReconnectAuto();
+
+        // 创建新的定时任务
         this.mConnectAutoTimerTask = new TimerTask() {
             public void run() {
+                // 如果蓝牙适配器未处于扫描状态或者BLE设备管理器未处于扫描状态
                 if (!BLEDeviceManager.this.mBluetoothManager.getAdapter().isDiscovering() || !BLEDeviceManager.this.isBleScanning) {
+                    // 获取已连接的BLE设备集合
                     Collection<BleDevice> devices = BLEDeviceManager.this.deviceMapConnected.values();
+                    // 移除消息队列中的重连消息
                     BLEDeviceManager.this.mBleMainHandler.removeMessages(3);
 
+                    // 遍历已连接的BLE设备
                     for (BleDevice device : devices) {
+                        // 如果设备状态为断开连接
                         if (device.getStatus() == DevStatus.disconnect) {
+                            // 创建消息对象
                             Message message = new Message();
                             message.what = 3;
                             message.obj = device.getIdString();
+                            // 发送重连消息
                             BLEDeviceManager.this.mBleMainHandler.sendMessage(message);
                         }
                     }
                 }
-
             }
         };
+
+        // 创建定时器并启动定时任务
         this.mConnectAutoTimer = new Timer();
         this.mConnectAutoTimer.schedule(this.mConnectAutoTimerTask, 1000L, 3000L);
     }
 
+    /**
+     * 停止自动重连
+     */
     public void stopReconnectAuto() {
+        // 取消定时器
         if (this.mConnectAutoTimer != null) {
             this.mConnectAutoTimer.cancel();
             this.mConnectAutoTimer = null;
         }
 
+        // 取消定时任务
         if (this.mConnectAutoTimerTask != null) {
             this.mConnectAutoTimerTask.cancel();
             this.mConnectAutoTimerTask = null;
         }
-
     }
 
+    /**
+     * 开始连接超时定时器
+     */
     public void startConnectTimeoutTimer() {
+        // 停止之前的连接超时定时器
         this.stopConnectTimeoutTimer();
+
+        // 创建一个新的定时任务
         this.mConnectTimeoutTask = new TimerTask() {
             public void run() {
+                // 检查蓝牙适配器是否正在扫描，并且是否正在进行BLE扫描
                 if (!BLEDeviceManager.this.mBluetoothManager.getAdapter().isDiscovering() || !BLEDeviceManager.this.isBleScanning) {
+                    // 获取已连接的BLE设备列表
                     Collection<BleDevice> devices = BLEDeviceManager.this.deviceMapConnected.values();
 
+                    // 遍历设备列表
                     for (BleDevice device : devices) {
+                        // 检查设备状态是否为已连接
                         if (device.getStatus() == DevStatus.connected) {
                             long now = System.currentTimeMillis();
+                            // 检查设备最后接收数据的时间是否超过连接超时时间
                             if (now - device.getLastTimeReceiveData() > (long) BLEDeviceManager.CONNECT_TIMEOUT) {
+                                // 断开设备连接
                                 BLEDeviceManager.this.disconnectDeviceByIDString(device.getIdString());
+                                // 更新设备状态为断开
                                 device.setStatus(DevStatus.disconnect);
                             }
                         }
                     }
                 }
-
             }
         };
+
+        // 创建一个新的定时器，并将定时任务添加到定时器中
         this.mConnectTimeoutTimer = new Timer();
         this.mConnectTimeoutTimer.schedule(this.mConnectTimeoutTask, 1000L, 6000L);
     }
 
+    /**
+     * 停止连接超时定时器
+     */
     public void stopConnectTimeoutTimer() {
+        // 取消定时器
         if (this.mConnectTimeoutTimer != null) {
             this.mConnectTimeoutTimer.cancel();
             this.mConnectTimeoutTimer = null;
         }
 
+        // 取消定时任务
         if (this.mConnectTimeoutTask != null) {
             this.mConnectTimeoutTask.cancel();
             this.mConnectTimeoutTask = null;
         }
-
     }
 
+    /**
+     * 初始化BLE设备管理器。
+     *
+     * @param ctx 上下文对象
+     * @param _bleBaseAdapter BLE基础适配器
+     * @return 初始化是否成功的布尔值
+     */
     public boolean init(Context ctx, BleBaseAdapter _bleBaseAdapter) {
         if (ctx == null) {
             return false;
         } else {
             this.mContext = ctx.getApplicationContext();
             this.bleBaseAdapter = _bleBaseAdapter;
+
+            // 初始化BluetoothManager
             if (this.mBluetoothManager == null) {
                 if (this.mContext == null) {
                     return false;
                 }
-
                 this.mBluetoothManager = (BluetoothManager) this.mContext.getSystemService(Context.BLUETOOTH_SERVICE);
                 if (this.mBluetoothManager == null) {
-                    Log.e(TAG, "Unable to initialize BluetoothManager.");
+                    Log.e(TAG, "无法初始化BluetoothManager。");
                     return false;
                 }
             }
 
             this.mBluetoothAdapter = this.mBluetoothManager.getAdapter();
             if (this.mBluetoothAdapter == null) {
-                Log.e(TAG, "Unable to obtain a BluetoothAdapter.");
+                Log.e(TAG, "无法获取BluetoothAdapter。");
                 return false;
             } else {
+                // 启用蓝牙适配器
                 if (this.mBluetoothAdapter.enable()) {
                     this.mLeScanner = this.mBluetoothAdapter.getBluetoothLeScanner();
-
                     if (this.mLeScanner == null) {
-                        Log.e(TAG, "mLeScanner" + this.mLeScanner);
+                        Log.e(TAG, "mLeScanner为null，尝试重新获取。");
                         this.mLeScanner = this.mBluetoothAdapter.getBluetoothLeScanner();
                     }
                 }
 
+                // 设置设备连接计数
                 if (this.bleBaseAdapter != null) {
                     this.deviceConnectCount = this.bleBaseAdapter.managerDeviceConnectCount();
                     if (this.deviceConnectCount <= 0) {
@@ -271,15 +341,16 @@ public class BLEDeviceManager {
                     }
                 }
 
+                // 设置BLE扫描回调
                 this.mLeScanCallback = (device, rssi, scanRecord) -> {
                     Log.e(BLEDeviceManager.TAG, "onLeScan搜索到的设备:" + device.getName() + "  address:" + device.getAddress() + " uuids:" + Arrays.toString(device.getUuids()));
                     ParcelUuid[] uuids = device.getUuids();
                     if (uuids == null) {
-
                         BLEDeviceManager.this.scanResult(device, scanRecord);
                     }
-
                 };
+
+                // 设置BLE扫描回调
                 this.mBleScanCallback = new ScanCallback() {
                     public void onScanResult(int callbackType, ScanResult result) {
                         if (result != null) {
@@ -288,10 +359,11 @@ public class BLEDeviceManager {
                                 Log.e(BLEDeviceManager.TAG, "mBleScanCallback.onScanResult搜索到设备:" + device.getName() + "  address:" + device.getAddress() + "  uuids:" + Arrays.toString(device.getUuids()));
                                 BLEDeviceManager.this.scanResult(device, result.getScanRecord().getBytes());
                             }
-
                         }
                     }
                 };
+
+                // 设置主线程Handler
                 this.mBleMainHandler = new Handler(this.mContext.getMainLooper()) {
                     public void handleMessage(@NonNull Message msg) {
                         String idString4;
@@ -302,7 +374,6 @@ public class BLEDeviceManager {
                                     if (BLEDeviceManager.this.mBluetoothAdapter.enable()) {
                                         BLEDeviceManager.this.mLeScanner = BLEDeviceManager.this.mBluetoothAdapter.getBluetoothLeScanner();
                                     }
-
                                     if (BLEDeviceManager.this.mLeScanner != null) {
                                         if (BLEDeviceManager.this.bleBaseAdapter != null) {
                                             BLEDeviceManager.this.mLeScanner.startScan(BLEDeviceManager.this.bleBaseAdapter.managerWithDeviceScanFilters(), (new ScanSettings.Builder()).build(), BLEDeviceManager.this.mBleScanCallback);
@@ -326,7 +397,6 @@ public class BLEDeviceManager {
                                     if (device == null || device.getDevice() == null) {
                                         return;
                                     }
-
                                     if (!BLEDeviceManager.this.connectDevice(device)) {
                                         device.setStatus(DevStatus.disconnect);
                                     }
@@ -339,17 +409,17 @@ public class BLEDeviceManager {
                                     if (devicex == null || devicex.getDevice() == null) {
                                         return;
                                     }
-
                                     BLEDeviceManager.this.sendData(devicex, data);
                                 }
                         }
-
                     }
                 };
+
                 return true;
             }
         }
     }
+
 
     private void scanResult(BluetoothDevice device, byte[] scanRecord) {
         String deviceName = device.getName();
@@ -401,13 +471,14 @@ public class BLEDeviceManager {
     public void startBLEScan() {
         if (!this.isBLESupported()) {
             this.isBleScanning = false;
-            Log.e(TAG, "该设备不支持BLE");
-        } else if (this.isBluetoothEnable()) {
+            //Log.e(TAG, "该设备不支持BLE");
+
+        } else if (this.isBluetoothEnable()) {//判断蓝牙是否已启用
+            //判断`mBluetoothAdapter`是否为空、是否正在进行蓝牙设备的发现以及是否已经在进行BLE扫描
             if (this.mBluetoothAdapter != null && !this.mBluetoothAdapter.isDiscovering() && !this.isBleScanning) {
                 if (this.bleBaseAdapter != null) {
                     this.bleBaseAdapter.managerStartScan();
                 }
-
                 this.isBleScanning = true;
                 this.deviceMapDiscover.clear();
                 Collection<BleDevice> devices = this.deviceMapConnected.values();
@@ -872,56 +943,5 @@ public class BLEDeviceManager {
         this.selectedIdString = selectedIdString;
     }
 
-    public abstract static class BleBaseAdapter {
-        public static final String key_index = "key_index";
-        public static final String key_idString = "idString";
-        public static final String key_name = "name";
 
-        public BleBaseAdapter() {
-        }
-
-        public abstract void managerIsBluetoothEnable(boolean var1);
-
-        public abstract int managerDeviceConnectCount();
-
-        public abstract void managerStartScan();
-
-        public abstract void managerStopScan();
-
-        public abstract void managerChangeNameForDisplay(BleDevice var1);
-
-        public abstract UUID managerWithServiceUUID();
-
-        public abstract String managerWithServiceUUIDPrefixString();
-
-        public abstract UUID[] managerWithDeviceUUIDArray();
-
-        public abstract List<ScanFilter> managerWithDeviceScanFilters();
-
-        public abstract String managerWithDeviceNameHasPrefix();
-
-        public abstract boolean managerWithScanFilter(BluetoothDevice var1, byte[] var2);
-
-        public abstract void managerDiscoverDeviceChange();
-
-        public abstract void managerDidAddNewDevice(BleDevice var1);
-
-        public abstract void managerDidConnect(BleDevice var1);
-
-        public abstract void managerDidDisconnect(BleDevice var1);
-
-        public abstract void managerReadyRemoveDevice(String var1);
-
-        public abstract void managerDidRemoveDevice();
-
-        public abstract String deviceUUID4CharacteristicNotify();
-
-        public abstract String deviceUUID4CharacteristicWrite();
-
-        public abstract void managerDidReadyWriteAndNotify(BleDevice var1);
-
-        public abstract void managerDidWarnCountOut();
-
-        public abstract void deviceReceiveDatawithDevice(BleDevice var1, byte[] var2);
-    }
 }
