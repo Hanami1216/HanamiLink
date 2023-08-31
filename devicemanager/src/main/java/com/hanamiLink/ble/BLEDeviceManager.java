@@ -167,6 +167,11 @@ public class BLEDeviceManager {
     private BLEDeviceManager() {
     }
 
+    /*
+     * @param :
+     * @return BLEDeviceManager
+     * @description 获取实例对象
+     */
     public static BLEDeviceManager getInstance() {
         if (instance == null) { // 如果实例为空
             Class<BLEDeviceManager> var0 = BLEDeviceManager.class;
@@ -474,6 +479,7 @@ public class BLEDeviceManager {
             //判断`mBluetoothAdapter`是否为空、是否正在进行蓝牙设备的发现以及是否已经在进行BLE扫描
             if (this.mBluetoothAdapter != null && !this.mBluetoothAdapter.isDiscovering() && !this.isBleScanning) {
                 if (this.bleBaseAdapter != null) {
+                    // 蓝牙扫描
                     this.bleBaseAdapter.managerStartScan();
                 }
                 this.isBleScanning = true;

@@ -8,6 +8,9 @@ import com.hanamiLink.ble.BLEDeviceManager;
 import com.hanamiLink.ble.BleBaseAdapter;
 import com.hanamiLink.ble.BleDevice;
 import com.hanamiLink.utils.BLEUtils;
+import com.hanamiLink.utils.BleEventType;
+import com.hanamiLink.utils.BleEventUtils;
+import com.hanamiLink.utils.BluetoothUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,12 +33,12 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
     @Override
     public void managerStartScan() {
-
+        BleEventUtils.postEmptyMsg(BleEventType.BLE_SCAN_START.toNumber());
     }
 
     @Override
     public void managerStopScan() {
-
+        BleEventUtils.postEmptyMsg(BleEventType.BLE_SCAN_END.toNumber());
     }
 
     @Override

@@ -7,18 +7,19 @@ package com.hanamiLink.utils;
 
 
 
+import android.bluetooth.BluetoothDevice;
 import android.text.TextUtils;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class Utils {
+public class BLEUtils {
     private static HashMap<Integer, String> serviceTypes = new HashMap();
     private static HashMap<Integer, String> charPermissions;
     private static HashMap<Integer, String> charProperties;
     private static HashMap<Integer, String> descPermissions;
 
-    public Utils() {
+    public BLEUtils() {
     }
 
     public static String getServiceType(int type) {
@@ -134,4 +135,38 @@ public class Utils {
         descPermissions.put(128, "WRITE_SIGNED");
         descPermissions.put(256, "WRITE_SIGNED_MITM");
     }
+
+
+    private static final String TAG = "BluetoothUtils";
+
+    public static final int DATA_TYPE_MANUFACTURER_SPECIFIC_DATA = 0xFF;
+
+    static final int BD_ADDR_LEN = 6; // bytes
+
+    public static String getAddressStringFromByte(byte[] address) {
+        if (address == null || address.length !=6) {
+            return null;
+        }
+        return String.format("%02X:%02X:%02X:%02X:%02X:%02X",
+                address[0], address[1], address[2], address[3], address[4],
+                address[5]);
+    }
+
+    public static byte[] getByteAddress(BluetoothDevice device) {
+        return getBytesFromAddress(device.getAddress());
+    }
+
+    public static byte[] getBytesFromAddress(String address) {
+        int i, j = 0;
+        byte[] output = new byte[BD_ADDR_LEN];
+        for (i = 0; i < address.length();i++) {
+            if (address.charAt(i) != ':') {
+                output[j] = (byte) Integer.parseInt(address.substring(i, i+2), 16);
+                j++;
+                i++;
+            }
+        }
+        return output;
+    }
+
 }
