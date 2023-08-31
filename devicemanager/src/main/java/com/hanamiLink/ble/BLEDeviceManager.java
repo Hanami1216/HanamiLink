@@ -167,10 +167,10 @@ public class BLEDeviceManager {
     private BLEDeviceManager() {
     }
 
-    /*
+    /**
      * @param :
      * @return BLEDeviceManager
-     * @description 获取实例对象
+     * @description 单例模式,获取实例
      */
     public static BLEDeviceManager getInstance() {
         if (instance == null) { // 如果实例为空
@@ -309,21 +309,21 @@ public class BLEDeviceManager {
             this.mContext = ctx.getApplicationContext();
             this.bleBaseAdapter = _bleBaseAdapter;
 
-            // 初始化BluetoothManager
             if (this.mBluetoothManager == null) {
                 if (this.mContext == null) {
                     return false;
                 }
+                // 初始化BluetoothManager
                 this.mBluetoothManager = (BluetoothManager) this.mContext.getSystemService(Context.BLUETOOTH_SERVICE);
                 if (this.mBluetoothManager == null) {
-                    Log.e(TAG, "无法初始化BluetoothManager。");
+                    //无法初始化BluetoothManager
                     return false;
                 }
             }
-
+            //获取适配器
             this.mBluetoothAdapter = this.mBluetoothManager.getAdapter();
             if (this.mBluetoothAdapter == null) {
-                Log.e(TAG, "无法获取BluetoothAdapter。");
+                //无法获取BluetoothAdapter
                 return false;
             } else {
                 // 启用蓝牙适配器
@@ -426,19 +426,22 @@ public class BLEDeviceManager {
     private void scanResult(BluetoothDevice device, byte[] scanRecord) {
         String deviceName = device.getName();
         if (this.bleBaseAdapter == null || this.bleBaseAdapter != null && this.bleBaseAdapter.managerWithScanFilter(device, scanRecord)) {
+            // 检查蓝牙适配器是否为空，或者满足特定的扫描过滤条件
             String idString = device.getAddress();
             BleDevice bleDevice;
             if (this.deviceMapConnected.containsKey(idString)) {
+                // 如果已连接设备列表中包含该设备地址，则更新已连接设备的状态
                 bleDevice = this.deviceMapConnected.get(idString);
                 bleDevice.resumeDeviceWithBluetoothDevice(device);
                 bleDevice.setStatus(DevStatus.disconnect);
             } else {
+                // 如果已连接设备列表中不包含该设备地址，则创建一个新的设备对象
                 bleDevice = new BleDevice();
                 bleDevice.setDevice(device);
                 bleDevice.setNameString(device.getName());
                 bleDevice.setIdString(device.getAddress());
                 bleDevice.setStatus(DevStatus.Unknown);
-                Log.e(TAG, "BleDevice:" + device.getAddress());
+                //添加进入deviceMapDiscover列表中
                 this.deviceMapDiscover.put(bleDevice.getIdString(), bleDevice);
                 if (this.bleBaseAdapter != null) {
                     this.bleBaseAdapter.managerChangeNameForDisplay(bleDevice);
@@ -449,8 +452,8 @@ public class BLEDeviceManager {
                 this.bleBaseAdapter.managerDiscoverDeviceChange();
             }
         }
-
     }
+
 
     public boolean isBluetoothEnable() {
         if (this.mBluetoothAdapter == null) {
@@ -905,7 +908,6 @@ public class BLEDeviceManager {
         if (deviceMap != null && deviceMap.size() > 0) {
             Set<String> devSet = deviceMap.keySet();
             Iterator var3 = devSet.iterator();
-
             do {
                 String idString;
                 HashMap pMap;

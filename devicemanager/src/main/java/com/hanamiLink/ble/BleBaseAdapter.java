@@ -17,7 +17,7 @@ public abstract class BleBaseAdapter {
      * 当蓝牙状态改变时调用此方法
      * @param var1 蓝牙是否可用的标志位
      */
-    public abstract void managerIsBluetoothEnable(boolean var1);
+    public abstract void managerIsBluetoothEnable(boolean isEnable);
 
     /**
      * 获取已连接设备的数量
@@ -37,9 +37,9 @@ public abstract class BleBaseAdapter {
 
     /**
      * 更改设备显示名称
-     * @param var1 要更改名称的设备对象
+     * @param bleDevice 要更改名称的设备对象
      */
-    public abstract void managerChangeNameForDisplay(BleDevice var1);
+    public abstract void managerChangeNameForDisplay(BleDevice bleDevice);
 
     /**
      * 获取服务UUID
@@ -73,11 +73,11 @@ public abstract class BleBaseAdapter {
 
     /**
      * 使用扫描过滤器过滤设备
-     * @param var1 要过滤的蓝牙设备对象
-     * @param var2 设备广播数据
+     * @param bluetoothDevice 要过滤的蓝牙设备对象
+     * @param scanRecord 设备广播数据
      * @return 是否通过过滤器
      */
-    public abstract boolean managerWithScanFilter(BluetoothDevice var1, byte[] var2);
+    public abstract boolean managerWithScanFilter(BluetoothDevice bluetoothDevice, byte[] scanRecord);
 
     /**
      * 设备发现改变时调用此方法
@@ -86,27 +86,27 @@ public abstract class BleBaseAdapter {
 
     /**
      * 添加新设备时调用此方法
-     * @param var1 新添加的设备对象
+     * @param bleDevice 新添加的设备对象
      */
-    public abstract void managerDidAddNewDevice(BleDevice var1);
+    public abstract void managerDidAddNewDevice(BleDevice bleDevice);
 
     /**
      * 设备连接成功时调用此方法
-     * @param var1 已连接的设备对象
+     * @param bleDevice 已连接的设备对象
      */
-    public abstract void managerDidConnect(BleDevice var1);
+    public abstract void managerDidConnect(BleDevice bleDevice);
 
     /**
      * 设备断开连接时调用此方法
-     * @param var1 断开连接的设备对象
+     * @param bleDevice 断开连接的设备对象
      */
-    public abstract void managerDidDisconnect(BleDevice var1);
+    public abstract void managerDidDisconnect(BleDevice bleDevice);
 
     /**
      * 准备移除设备时调用此方法
-     * @param var1 要移除的设备的UUID字符串
+     * @param idString 要移除的设备的UUID字符串
      */
-    public abstract void managerReadyRemoveDevice(String var1);
+    public abstract void managerReadyRemoveDevice(String idString);
 
     /**
      * 移除设备时调用此方法
@@ -127,9 +127,9 @@ public abstract class BleBaseAdapter {
 
     /**
      * 设备准备好写入和通知时调用此方法
-     * @param var1 准备好写入和通知的设备对象
+     * @param bleDevice 准备好写入和通知的设备对象
      */
-    public abstract void managerDidReadyWriteAndNotify(BleDevice var1);
+    public abstract void managerDidReadyWriteAndNotify(BleDevice bleDevice);
 
     /**
      * 警告计数超出时调用此方法
