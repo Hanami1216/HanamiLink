@@ -20,6 +20,7 @@ public class DeviceAdapter extends BaseQuickAdapter<BluetoothDevice, BaseViewHol
     public DeviceAdapter(int layoutResId, @Nullable List<BluetoothDevice> data) {
         super(layoutResId, data);
     }
+    @SuppressLint("NotifyDataSetChanged")
     public void changeBondDevice(){
         notifyDataSetChanged();
     }
