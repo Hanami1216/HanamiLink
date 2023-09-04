@@ -5,6 +5,7 @@ import android.bluetooth.le.ScanFilter;
 
 import java.util.List;
 import java.util.UUID;
+
 public abstract class BleBaseAdapter {
     public static final String key_index = "key_index";
     public static final String key_idString = "idString";
