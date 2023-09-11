@@ -4,67 +4,53 @@ package com.hanamilink;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.listener.OnItemChildClickListener;
 import com.hanamiLink.ble.BLEDeviceManager;
 import com.hanamiLink.ble.BleDevice;
 import com.hanamiLink.utils.PermissionUtils;
 import com.hanamiLink.utils.StatusBarUtil;
+import com.hanamiLink.utils.ToastUtil;
 import com.hanamilink.ble.BleManagerAdapter;
 import com.hanamilink.bluetooth.adapter.DeviceAdapter;
-import com.hjq.permissions.OnPermissionCallback;
-import com.hjq.permissions.Permission;
-import com.hjq.permissions.XXPermissions;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
+import pub.devrel.easypermissions.AppSettingsDialog;
 import pub.devrel.easypermissions.EasyPermissions;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements View.OnClickListener,EasyPermissions.PermissionCallbacks{
 
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private static int REQUEST_ENABLE_BLUETOOTH = 1;//请求码
-
-    BluetoothAdapter bluetoothAdapter;//蓝牙适配器
 
     private TextView scanDevices;//扫描设备
     private LinearLayout loadingLay;//加载布局
     private RecyclerView rv;//蓝牙设备展示列表
-    private BluetoothReceiver bluetoothReceiver;//蓝牙广播接收器
-
 
     DeviceAdapter mAdapter;//蓝牙设备适配器
-    List<BluetoothDevice> list = new ArrayList<>();//数据来源
+    List<BleDevice> deviceList;//蓝牙数据
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,12 +58,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
 
         StatusBarUtil.StatusBarLightMode(this);//状态栏黑色字体
-
+        initBLE();
         initView();//初始化控件
 
-        checkVersion();//检查版本
     }
-
     /**
      * 初始化控件
      */
@@ -88,18 +72,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         scanDevices.setOnClickListener(this);
     }
 
-
-    /**
-     * 检查Android版本
-     */
-    private void checkVersion() {
-        if (Build.VERSION.SDK_INT >= 23) {//6.0或6.0以上
-            permissionsRequest();//动态权限申请
-        } else {//6.0以下
-            initBlueTooth();//初始化蓝牙配置
-        }
-    }
-
     /**
      * 动态权限申请
      */
@@ -107,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         EasyPermissions.requestPermissions(
                 this,
                 "请授予蓝牙权限以实现相关功能",
-                1,
+                REQUEST_ENABLE_BLUETOOTH,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION,
                 Manifest.permission.BLUETOOTH,
@@ -115,33 +87,53 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Manifest.permission.BLUETOOTH_SCAN,
                 Manifest.permission.BLUETOOTH_CONNECT
         );
-        initBlueTooth();
-    }
+   }
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == 1) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // 用户授予了蓝牙权限，可以执行相关操作
-            } else {
-                // 用户拒绝了蓝牙权限，可以给出相应的提示或处理逻辑
-            }
-        }
+        EasyPermissions.onRequestPermissionsResult(requestCode, permissions, grantResults, this);
     }
-
 
     /**
      * 初始化蓝牙配置
      */
-    private void initBlueTooth() {
-        IntentFilter intentFilter = new IntentFilter();//创建一个IntentFilter对象
-        intentFilter.addAction(BluetoothDevice.ACTION_FOUND);//获得扫描结果
-        intentFilter.addAction(BluetoothDevice.ACTION_BOND_STATE_CHANGED);//绑定状态变化
-        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);//开始扫描
-        intentFilter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);//扫描结束
-        bluetoothReceiver = new BluetoothReceiver();//实例化广播接收器
-        registerReceiver(bluetoothReceiver, intentFilter);//注册广播接收器
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();//获取蓝牙适配器
+    private void initBLE(){
+        // 检查权限
+        final String[] rationale = {""};
+        List<String> permissions = new ArrayList<String>() {{
+            if (PermissionUtils.isAndroid12OrAbove()) {
+                add(Manifest.permission.BLUETOOTH_SCAN);
+                add(Manifest.permission.BLUETOOTH_CONNECT);
+                rationale[0] += getString(R.string.permission_bluetooth_description);
+            } else {
+                add(Manifest.permission.ACCESS_FINE_LOCATION);
+                add(Manifest.permission.ACCESS_COARSE_LOCATION);
+                rationale[0] += getString(R.string.permission_location_description);
+            }
+        }};
+        String[] permissionsArray = permissions.toArray(new String[0]);
+
+        if(EasyPermissions.hasPermissions(this, permissionsArray))
+        {
+            Log.v(TAG, "checkPermission passed");
+            // 单例模式BLE初始化
+            BLEDeviceManager.getInstance().init(this, new BleManagerAdapter());
+
+            BLEDeviceManager.getInstance().readAllDeviceConnected();
+
+            deviceList = BLEDeviceManager.getInstance().getAllUsedDevices();
+            if (!deviceList.isEmpty()) {
+                BLEDeviceManager.getInstance().setSelectedIdString(deviceList.get(0).getIdString());
+                // 只有搜索到这个设备才能重连接
+                BLEDeviceManager.getInstance().startBLEScan();
+            }
+
+            BLEDeviceManager.getInstance().startReconnectAuto();
+            //BLEManager.getInstance().startConnectTimeoutTimer();
+        } else {
+            // 请求权限
+            permissionsRequest();
+        }
     }
 
     /**
@@ -162,21 +154,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     public void onClick(@NonNull View v) {
         if (v.getId() == R.id.scan_devices) {
-            if (bluetoothAdapter != null) {//是否支持蓝牙
-                if (bluetoothAdapter.isEnabled()) {//打开
-                    //开始扫描周围的蓝牙设备,如果扫描到蓝牙设备，通过广播接收器发送广播
-                    if (mAdapter != null) {//当适配器不为空时，这时就说明已经有数据了，所以清除列表数据，再进行扫描
-                        list.clear();
-                        //mAdapter.notifyDataSetChanged();
-                    }
-                    bluetoothAdapter.startDiscovery();
-                } else {//未打开
-                    Intent intent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivityForResult(intent, REQUEST_ENABLE_BLUETOOTH);
-                }
-            } else {
-                showMsg("你的设备不支持蓝牙");
-            }
+            showMsg("扫描蓝牙");
+            showDevicesData(this);
         }
     }
 
@@ -199,30 +178,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-    /**
-     * 广播接收器
-     */
-    private class BluetoothReceiver extends BroadcastReceiver {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-            switch (action) {
-                case BluetoothDevice.ACTION_FOUND://扫描到设备
-                    showDevicesData(context, intent);//数据展示
-                    break;
-                case BluetoothDevice.ACTION_BOND_STATE_CHANGED://设备绑定状态发生改变
-                    mAdapter.changeBondDevice();//刷新适配器
-                    break;
-                case BluetoothAdapter.ACTION_DISCOVERY_STARTED://开始扫描
-                    loadingLay.setVisibility(View.VISIBLE);//显示加载布局
-                    break;
-                case BluetoothAdapter.ACTION_DISCOVERY_FINISHED://扫描结束
-                    loadingLay.setVisibility(View.GONE);//隐藏加载布局
-                    break;
-            }
-        }
 
-    }
 
     /**
      * 显示蓝牙设备信息
@@ -230,54 +186,30 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      * @param context 上下文参数
      * @param intent  意图
      */
-    private void showDevicesData(Context context, Intent intent) {
-        getBondedDevice();//获取已绑定的设备
-        //获取周围蓝牙设备
-        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-
-        if (list.indexOf(device) == -1) {//防止重复添加
-
-            if (device.getName() != null) {//过滤掉设备名称为null的设备
-                list.add(device);
-            }
-        }
-        mAdapter = new DeviceAdapter(R.layout.item_device_list, list);
+    private void showDevicesData(Context context) {
+        BLEDeviceManager.getInstance().startBLEScan();
+        deviceList = BLEDeviceManager.getInstance().getAllDevices();
+        mAdapter = new DeviceAdapter(R.layout.item_device_list, deviceList);
         rv.setLayoutManager(new LinearLayoutManager(context));
         rv.setAdapter(mAdapter);
-
-        mAdapter.setOnItemChildClickListener(new OnItemChildClickListener() {
-            @Override
-            public void onItemChildClick(@NonNull BaseQuickAdapter<?, ?> adapter, @NonNull View view, int position) {
-                //点击时获取状态，如果已经配对过了就不需要在配对
-                if (list.get(position).getBondState() == BluetoothDevice.BOND_NONE) {
-                    createOrRemoveBond(1, list.get(position));//开始匹配
-                } else {
-                    showDialog("确定要取消配对吗？", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            //取消配对
-                            createOrRemoveBond(2, list.get(position));//取消匹配
-                        }
-                    });
-                }
-            }
-        });
+        mAdapter.notifyDataSetChanged();
     }
 
     /**
      * 获取已绑定设备
      */
     private void getBondedDevice() {
-        Set<BluetoothDevice> pairedDevices = bluetoothAdapter.getBondedDevices();
-        if (pairedDevices.size() > 0) {//如果获取的结果大于0，则开始逐个解析
-            for (BluetoothDevice device : pairedDevices) {
-                if (list.indexOf(device) == -1) {//防止重复添加
-                    if (device.getName() != null) {//过滤掉设备名称为null的设备
-                        list.add(device);
-                    }
+        HashMap<String, BleDevice> pairedDevices = BLEDeviceManager.getInstance().deviceMapConnected;
+        List<BluetoothDevice> list = new ArrayList<>();
+        if (pairedDevices.size() > 0) {
+            for (BleDevice bleDevice : pairedDevices.values()) {
+                BluetoothDevice device = bleDevice.getDevice();
+                if (!list.contains(device) && device.getName() != null) {
+                    list.add(device);
                 }
             }
         }
+
     }
 
     /**
@@ -297,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case 2://取消匹配
                     method = BluetoothDevice.class.getMethod("removeBond");
                     method.invoke(device);
-                    list.remove(device);//清除列表中已经取消了配对的设备
+                    deviceList.remove(device);//清除列表中已经取消了配对的设备
                     break;
             }
         } catch (NoSuchMethodException e) {
@@ -311,28 +243,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
-    /**
-     * 弹窗
-     *
-     * @param dialogTitle     标题
-     * @param onClickListener 按钮的点击事件
-     */
-    private void showDialog(String dialogTitle, @NonNull DialogInterface.OnClickListener onClickListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage(dialogTitle);
-        builder.setPositiveButton("确定", onClickListener);
-        builder.setNegativeButton("取消", null);
-        builder.create().show();
+
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        ToastUtil.toast(this,this.getResources().getString(R.string.tip_Permission_Granted));
+        initBLE();
     }
 
-
-    /**
-     * 销毁
-     */
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        //卸载广播接收器
-        unregisterReceiver(bluetoothReceiver);
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        ToastUtil.toast(this,this.getResources().getString(R.string.tip_Permission_Denied));
+        /*
+          若是在权限弹窗中，用户勾选了NEVER ASK AGAIN.'或者'不在提示'，且拒绝权限。
+          这时候，需要跳转到设置界面去，让用户手动开启。
+         */
+        if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
+            new AppSettingsDialog.Builder(this).build().show();
+        }
     }
 }

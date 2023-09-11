@@ -86,6 +86,7 @@ public class BleManagerAdapter extends BleBaseAdapter {
         return null;
     }
 
+    //
     @Override
     public String managerWithDeviceNameHasPrefix() {
         return "";
@@ -93,22 +94,22 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
     @Override
     public boolean managerWithScanFilter(BluetoothDevice bluetoothDevice, byte[] scanRecord) {
-        @SuppressLint("MissingPermission")
-        String deviceName = bluetoothDevice.getName();
-        String filterNamePrefix = managerWithDeviceNameHasPrefix();
-
-        if (filterNamePrefix == null) {
-            filterNamePrefix = "";
-        }
-
-        if (deviceName != null && deviceName.startsWith(filterNamePrefix)) {
-
-            String idString = bluetoothDevice.getAddress();
-            // 根据id获取Device
-            BLEDeviceManager.getInstance().getDeviceById(idString);
-            return true;
-        }
-        return false;
+        //@SuppressLint("MissingPermission")
+        //String deviceName = bluetoothDevice.getName();
+        //String filterNamePrefix = managerWithDeviceNameHasPrefix();
+        //
+        //if (filterNamePrefix == null) {
+        //    filterNamePrefix = "";
+        //}
+        //
+        //if (deviceName != null && deviceName.startsWith(filterNamePrefix)) {
+        //
+        //    String idString = bluetoothDevice.getAddress();
+        //    // 根据id获取Device
+        //    BLEDeviceManager.getInstance().getDeviceById(idString);
+        //    return true;
+        //}
+        return true;
     }
 
     @Override

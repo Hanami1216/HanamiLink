@@ -67,7 +67,7 @@ public abstract class BleBaseAdapter {
     public abstract List<ScanFilter> managerWithDeviceScanFilters();
 
     /**
-     * 获取设备名称前缀
+     * 获取设备名称前缀，解耦过滤设备方法
      * @return 设备名称前缀
      */
     public abstract String managerWithDeviceNameHasPrefix();

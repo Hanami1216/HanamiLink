@@ -11,14 +11,15 @@ import androidx.annotation.Nullable;
 import com.chad.library.adapter.base.BaseQuickAdapter;
 
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
+import com.hanamiLink.ble.BleDevice;
 import com.hanamilink.R;
 
 import java.util.List;
 
 @SuppressLint("MissingPermission")
-public class DeviceAdapter extends BaseQuickAdapter<BluetoothDevice, BaseViewHolder>{
-    public DeviceAdapter(int layoutResId, @Nullable List<BluetoothDevice> data) {
-        super(layoutResId, data);
+public class DeviceAdapter extends BaseQuickAdapter<BleDevice, BaseViewHolder>{
+    public DeviceAdapter(int layoutResId, @Nullable List<BleDevice> data) {
+        super(layoutResId,data);
     }
     @SuppressLint("NotifyDataSetChanged")
     public void changeBondDevice(){
@@ -84,29 +85,28 @@ public class DeviceAdapter extends BaseQuickAdapter<BluetoothDevice, BaseViewHol
         }
     }
 
+
     @Override
-    protected void convert(@NonNull BaseViewHolder helper, BluetoothDevice item) {
-        if (item.getName() == null) {
+    protected void convert(@NonNull BaseViewHolder helper, BleDevice item) {
+        if (item.getNameString() == null) {
             helper.setText(R.id.tv_name, "无名");
         } else {
-            helper.setText(R.id.tv_name, item.getName());
+            helper.setText(R.id.tv_name, item.getNameString());
         }
-
         ImageView imageView = helper.getView(R.id.iv_device_type);
-        getDeviceType(item.getBluetoothClass().getMajorDeviceClass(), imageView);
+        getDeviceType(item.getDevice().getBluetoothClass().getMajorDeviceClass(), imageView);
 
         //蓝牙设备绑定状态判断
-        switch (item.getBondState()) {
-            case 12:
+        switch (item.getStatus()) {
+            case connected:
                 helper.setText(R.id.tv_bond_state, "已配对");
                 break;
-            case 11:
+            case connecting:
                 helper.setText(R.id.tv_bond_state, "正在配对...");
                 break;
-            case 10:
+            case disconnect:
                 helper.setText(R.id.tv_bond_state, "未配对");
                 break;
         }
-
     }
 }
