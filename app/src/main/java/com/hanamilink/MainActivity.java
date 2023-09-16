@@ -29,6 +29,8 @@ import com.hanamiLink.utils.ToastUtil;
 import com.hanamilink.ble.BleManagerAdapter;
 import com.hanamilink.bluetooth.adapter.DeviceAdapter;
 
+import org.greenrobot.eventbus.EventBus;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();//初始化控件
 
     }
+
     /**
      * 初始化控件
      */

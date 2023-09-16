@@ -16,7 +16,7 @@ import com.hanamilink.R;
 
 import java.util.List;
 
-@SuppressLint("MissingPermission")
+
 public class DeviceAdapter extends BaseQuickAdapter<BleDevice, BaseViewHolder>{
     public DeviceAdapter(int layoutResId, @Nullable List<BleDevice> data) {
         super(layoutResId,data);

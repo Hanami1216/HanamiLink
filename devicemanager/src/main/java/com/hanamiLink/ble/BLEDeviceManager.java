@@ -42,7 +42,6 @@ import java.util.TimerTask;
 import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 
-@SuppressLint("MissingPermission")
 public class BLEDeviceManager {
     private static final String TAG = BLEDeviceManager.class.getSimpleName();
 
