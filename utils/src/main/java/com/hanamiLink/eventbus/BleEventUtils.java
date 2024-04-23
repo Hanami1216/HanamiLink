@@ -1,4 +1,4 @@
-package com.hanamiLink.utils;
+package com.hanamiLink.eventbus;
 
 
 import android.os.Bundle;

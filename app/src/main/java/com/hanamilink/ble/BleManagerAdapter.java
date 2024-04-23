@@ -1,6 +1,5 @@
 package com.hanamilink.ble;
 
-import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanFilter;
 import android.os.Handler;
@@ -12,8 +11,8 @@ import com.hanamiLink.ble.BLEDeviceManager;
 import com.hanamiLink.ble.BleBaseAdapter;
 import com.hanamiLink.ble.BleDevice;
 import com.hanamiLink.utils.BLEUtils;
-import com.hanamiLink.utils.BleEventType;
-import com.hanamiLink.utils.BleEventUtils;
+import com.hanamiLink.eventbus.BleEventType;
+import com.hanamiLink.eventbus.BleEventUtils;
 
 import java.util.Arrays;
 import java.util.List;

@@ -459,7 +459,11 @@ public class BLEDeviceManager {
         }
     }
 
-
+    /**
+     * 检查蓝牙是否启用
+     *
+     * @return 如果蓝牙已启用，则返回true；否则返回false
+     */
     public boolean isBluetoothEnable() {
         if (this.mBluetoothAdapter == null) {
             this.mBluetoothAdapter = this.mBluetoothManager.getAdapter();
