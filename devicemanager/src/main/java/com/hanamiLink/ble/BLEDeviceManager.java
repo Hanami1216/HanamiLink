@@ -25,6 +25,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
+import com.hanamiLink.eventbus.BleEventType;
+import com.hanamiLink.eventbus.BleEventUtils;
 import com.hanamiLink.utils.BlePrefUtil;
 import com.hanamiLink.utils.BLEUtils;
 
@@ -62,7 +64,7 @@ public class BLEDeviceManager {
     BluetoothAdapter.LeScanCallback mLeScanCallback;  // 蓝牙扫描回调
     private BluetoothLeScanner mLeScanner = null;  // 蓝牙扫描器
     private ScanCallback mBleScanCallback = null;  // 蓝牙扫描回调
-    private boolean isBleScanning = false;  // 是否正在进行蓝牙扫描
+    public boolean isBleScanning ;  // 是否正在进行蓝牙扫描
     private String selectedIdString;  // 选定的设备ID字符串
     private Timer delaySendTimer;  // 延迟发送定时器
     private TimerTask delaySendTimerTask;  // 延迟发送任务
@@ -344,7 +346,7 @@ public class BLEDeviceManager {
                     }
                 }
 
-                // 设置BLE扫描回调
+                // 处理低版本设备的扫描结果
                 this.mLeScanCallback = (device, rssi, scanRecord) -> {
                     Log.e(BLEDeviceManager.TAG, "onLeScan搜索到的设备:" + device.getName() + "  address:" + device.getAddress() + " uuids:" + Arrays.toString(device.getUuids()));
                     ParcelUuid[] uuids = device.getUuids();
@@ -353,7 +355,7 @@ public class BLEDeviceManager {
                     }
                 };
 
-                // 设置BLE扫描回调
+                // 处理高版本设备的扫描结果
                 this.mBleScanCallback = new ScanCallback() {
                     public void onScanResult(int callbackType, ScanResult result) {
                         if (result != null) {
@@ -365,6 +367,7 @@ public class BLEDeviceManager {
                                         + "  address:" + device.getAddress()
                                         + "  uuids:" + Arrays.toString(device.getUuids()));
                                 BLEDeviceManager.this.scanResult(device, result.getScanRecord().getBytes());
+                                BleEventUtils.postEmptyMsg(BleEventType.BLE_SCAN_ING.toNumber());
                             }
                         }
                     }
@@ -448,6 +451,7 @@ public class BLEDeviceManager {
                 bleDevice.setStatus(DevStatus.Unknown);
                 //添加进入deviceMapDiscover列表中
                 this.deviceMapDiscover.put(bleDevice.getIdString(), bleDevice);
+
                 if (this.bleBaseAdapter != null) {
                     this.bleBaseAdapter.managerChangeNameForDisplay(bleDevice);
                 }
@@ -486,7 +490,6 @@ public class BLEDeviceManager {
         if (!this.isBLESupported()) {
             this.isBleScanning = false;
             //Log.e(TAG, "该设备不支持BLE");
-
         } else if (this.isBluetoothEnable()) {//判断蓝牙是否已启用
             //判断`mBluetoothAdapter`是否为空、是否正在进行蓝牙设备的发现以及是否已经在进行BLE扫描
             if (this.mBluetoothAdapter != null && !this.mBluetoothAdapter.isDiscovering() && !this.isBleScanning) {
@@ -510,7 +513,9 @@ public class BLEDeviceManager {
                 this.mBleMainHandler.removeMessages(1);
                 this.mBleMainHandler.sendEmptyMessage(1);
                 this.mBleMainHandler.removeMessages(2);
-                int SCAN_PERIOD = 10000;
+                //扫描周期
+                int SCAN_PERIOD = 1000000;
+                //
                 this.mBleMainHandler.sendEmptyMessageDelayed(2, SCAN_PERIOD);
             }
 

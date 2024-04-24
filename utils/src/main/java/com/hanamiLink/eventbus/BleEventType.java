@@ -25,8 +25,8 @@ public enum BleEventType {
     // BLE 已启用
     BLE_ISENABLE_YES(110),
     // BLE 未启用
-    BLE_ISENABLE_NO(111);
-
+    BLE_ISENABLE_NO(111),
+    BLE_SCAN_ING(112);
 
     private int iNum = 0;
 

@@ -33,7 +33,7 @@
                 android:layout_gravity="center"
                 android:text="蓝牙管理"
                 android:textColor="#000"
-                android:textSize="24dp" />
+                android:textSize="24sp" />
 
     </androidx.appcompat.widget.Toolbar>
 

@@ -7,11 +7,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothDevice;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -34,10 +33,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import pub.devrel.easypermissions.AppSettingsDialog;
@@ -59,7 +55,7 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onStart() {
         super.onStart();
-        if(!EventBus.getDefault().isRegistered(this)){
+        if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().register(this);
         }
     }
@@ -67,16 +63,16 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(!EventBus.getDefault().isRegistered(this)){
+        if (!EventBus.getDefault().isRegistered(this)) {
             EventBus.getDefault().unregister(this);
         }
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void onEventMainThread(Message msg) {
-        if (msg.what == BleEventType.BLE_SCAN_START.toNumber()) {
+        if (msg.what == BleEventType.BLE_SCAN_ING.toNumber()) {
             // 执行蓝牙扫描开始后的操作
-            showDevicesData(this);
+            showDevicesData();
         }
     }
 
@@ -95,10 +91,21 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
      * 初始化控件
      */
     private void initView() {
-
         scanDevices = findViewById(R.id.scan_devices);
         rv = findViewById(R.id.rv);
         scanDevices.setOnClickListener(this);
+        // 蓝牙设备列表
+        mAdapter = new DeviceAdapter(R.layout.item_device_list, BLEDeviceManager.getInstance().getAllUsedDevices());
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        rv.setAdapter(mAdapter);
+    }
+
+    /**
+     * 显示蓝牙设备信息
+     */
+
+    private void showDevicesData() {
+        mAdapter.setList(BLEDeviceManager.getInstance().getAllDevices());
     }
 
     /**
@@ -186,8 +193,6 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
         if (v.getId() == R.id.scan_devices) {
             showMsg("扫描蓝牙");
             BLEDeviceManager.getInstance().startBLEScan();
-            // 发布蓝牙扫描
-            BleEventUtils.postEmptyMsg(BleEventType.BLE_SCAN_START.toNumber());
         }
     }
 
@@ -211,18 +216,7 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
     }
 
 
-    /**
-     * 显示蓝牙设备信息
-     *
-     * @param context 上下文参数
-     */
-    private void showDevicesData(Context context) {
-        deviceList = BLEDeviceManager.getInstance().getAllDevices();
-        mAdapter = new DeviceAdapter(R.layout.item_device_list, deviceList);
-        rv.setLayoutManager(new LinearLayoutManager(context));
-        rv.setAdapter(mAdapter);  // 确保适配器已经被设置到RecyclerView上
-        mAdapter.notifyDataSetChanged();  // 在适配器被设置到RecyclerView上之后调用
-    }
+
 
 
     /**
@@ -236,6 +230,7 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
         ToastUtil.toast(this, this.getResources().getString(R.string.tip_Permission_Granted));
         initBLE();
     }
+
     /*
       若是在权限弹窗中，用户勾选了NEVER ASK AGAIN.'或者'不在提示'，且拒绝权限。
       这时候，需要跳转到设置界面去，让用户手动开启。
