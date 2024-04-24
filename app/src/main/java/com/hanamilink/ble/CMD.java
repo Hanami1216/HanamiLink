@@ -26,7 +26,7 @@ public class CMD {
     }
 
     public static int getIntByHighToLower(byte b0,byte b1,byte b2,byte b3) {
-        return (((b0 & 0xff) << 24) +((b1 & 0xff) << 16) +((b2 & 0xff) << 8) + (b3 & 0xff)) & 0xFFFFFFFF;
+        return (((b0 & 0xff) << 24) + ((b1 & 0xff) << 16) + ((b2 & 0xff) << 8) + (b3 & 0xff));
     }
 
     /**

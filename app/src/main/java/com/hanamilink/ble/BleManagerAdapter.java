@@ -1,5 +1,6 @@
 package com.hanamilink.ble;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanFilter;
 import android.os.Handler;
@@ -93,22 +94,22 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
     @Override
     public boolean managerWithScanFilter(BluetoothDevice bluetoothDevice, byte[] scanRecord) {
-        //@SuppressLint("MissingPermission")
-        //String deviceName = bluetoothDevice.getName();
-        //String filterNamePrefix = managerWithDeviceNameHasPrefix();
-        //
-        //if (filterNamePrefix == null) {
-        //    filterNamePrefix = "";
-        //}
-        //
-        //if (deviceName != null && deviceName.startsWith(filterNamePrefix)) {
-        //
-        //    String idString = bluetoothDevice.getAddress();
-        //    // 根据id获取Device
-        //    BLEDeviceManager.getInstance().getDeviceById(idString);
-        //    return true;
-        //}
-        return true;
+        @SuppressLint("MissingPermission")
+        String deviceName = bluetoothDevice.getName();
+        String filterNamePrefix = managerWithDeviceNameHasPrefix();
+
+        if (filterNamePrefix == null) {
+            filterNamePrefix = "";
+        }
+
+        if (deviceName != null && deviceName.startsWith(filterNamePrefix)) {
+
+            String idString = bluetoothDevice.getAddress();
+            // 根据id获取Device
+            BLEDeviceManager.getInstance().getDeviceById(idString);
+            return true;
+        }
+        return false;
     }
 
     @Override
@@ -177,7 +178,7 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
     @Override
     public void managerDidReadyWriteAndNotify(BleDevice bleDevice) {
-        BleEventUtils.postMsgWithObject(BleEventType.BLE_DEVICE_CONNECTED.toNumber(),bleDevice.getNameString());
+        BleEventUtils.postMsgWithObject(BleEventType.BLE_DEVICE_CONNECTED.toNumber(), bleDevice.getNameString());
         new Handler(Looper.getMainLooper()).postDelayed(() -> {
             BLEDeviceManager.getInstance().sendDataDelay(bleDevice, CMD.getQuerySystemModeType());
             BLEDeviceManager.getInstance().sendDataDelay(bleDevice, CMD.getQuerySystemStatusType());
@@ -192,17 +193,24 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
 
     public void deviceReceiveDatawithDevice(BleDevice device, byte[] data) {
+        // 调用 BleDevice 的 getNameString 方法，但未使用返回值
         device.getNameString();
 
+        // 输出带有“deviceReceiveData-withDevice:”标签和 data 的十六进制字符串
         Log.e(TAG, "deviceReceiveData-withDevice:" + BLEUtils.bytesToHexString(data));
 
+        // 检查数据是否为 null 或长度小于 3，是则立即返回
         if (data == null || data.length < 3) {
             return;
         }
+
+        // 设置 BleDevice 对象的 lastTimeReceiveData 属性为当前系统时间
         device.setLastTimeReceiveData(System.currentTimeMillis());
 
+        // 获取设备名称参数并处理数据头部
         String devName = device.getStringParam(key_name, "设备");
         int header = data[0] & 0xFF;
+
 
     }
 }

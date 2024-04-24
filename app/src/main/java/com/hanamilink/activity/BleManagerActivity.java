@@ -225,70 +225,24 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
     }
 
 
-
-
     /**
-     * 获取已绑定设备
+     * @param requestCode:
+     * @param perms:
+     * @return void
+     * @description 当用户授予所需的权限后，该方法会展示一个提示消息，并在此之后调用initBLE()来初始化蓝牙配置。
      */
-    @SuppressLint("MissingPermission")
-    private void getBondedDevice() {
-        HashMap<String, BleDevice> pairedDevices = BLEDeviceManager.getInstance().deviceMapConnected;
-        List<BluetoothDevice> list = new ArrayList<>();
-        if (pairedDevices.size() > 0) {
-            for (BleDevice bleDevice : pairedDevices.values()) {
-                BluetoothDevice device = bleDevice.getDevice();
-                if (!list.contains(device) && device.getName() != null) {
-                    list.add(device);
-                }
-            }
-        }
-
-    }
-
-    /**
-     * 创建或者取消匹配
-     *
-     * @param type   处理类型 1 匹配  2  取消匹配
-     * @param device 设备
-     */
-    private void createOrRemoveBond(int type, BluetoothDevice device) {
-        Method method;
-        try {
-            switch (type) {
-                case 1://开始匹配
-                    method = BluetoothDevice.class.getMethod("createBond");
-                    method.invoke(device);
-                    break;
-                case 2://取消匹配
-                    method = BluetoothDevice.class.getMethod("removeBond");
-                    method.invoke(device);
-                    deviceList.remove(device);//清除列表中已经取消了配对的设备
-                    break;
-            }
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
         ToastUtil.toast(this, this.getResources().getString(R.string.tip_Permission_Granted));
         initBLE();
     }
-
+    /*
+      若是在权限弹窗中，用户勾选了NEVER ASK AGAIN.'或者'不在提示'，且拒绝权限。
+      这时候，需要跳转到设置界面去，让用户手动开启。
+     */
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
         ToastUtil.toast(this, this.getResources().getString(R.string.tip_Permission_Denied));
-        /*
-          若是在权限弹窗中，用户勾选了NEVER ASK AGAIN.'或者'不在提示'，且拒绝权限。
-          这时候，需要跳转到设置界面去，让用户手动开启。
-         */
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             new AppSettingsDialog.Builder(this).build().show();
         }
