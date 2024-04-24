@@ -498,6 +498,7 @@ public class BLEDeviceManager {
                     this.bleBaseAdapter.managerStartScan();
                 }
                 this.isBleScanning = true;
+                // 清空扫描设备
                 this.deviceMapDiscover.clear();
                 //遍历deviceMapConnected
                 Collection<BleDevice> devices = this.deviceMapConnected.values();
@@ -514,7 +515,7 @@ public class BLEDeviceManager {
                 this.mBleMainHandler.sendEmptyMessage(1);
                 this.mBleMainHandler.removeMessages(2);
                 //扫描周期
-                int SCAN_PERIOD = 1000000;
+                int SCAN_PERIOD = 30000;
                 //
                 this.mBleMainHandler.sendEmptyMessageDelayed(2, SCAN_PERIOD);
             }

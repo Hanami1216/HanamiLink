@@ -3,6 +3,7 @@ package com.hanamilink.bluetooth.adapter;
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothClass;
 import android.bluetooth.BluetoothDevice;
+import android.view.View;
 import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
@@ -12,6 +13,7 @@ import com.chad.library.adapter.base.BaseQuickAdapter;
 
 import com.chad.library.adapter.base.viewholder.BaseViewHolder;
 import com.hanamiLink.ble.BleDevice;
+import com.hanamiLink.utils.ToastUtil;
 import com.hanamilink.R;
 
 import java.util.List;
@@ -85,6 +87,11 @@ public class DeviceAdapter extends BaseQuickAdapter<BleDevice, BaseViewHolder>{
         }
     }
 
+    @Override
+    protected void setOnItemChildClick(@NonNull View v, int position) {
+        super.setOnItemChildClick(v, position);
+        ToastUtil.toast(this.getContext(),"点击");
+    }
 
     @Override
     protected void convert(@NonNull BaseViewHolder helper, BleDevice item) {

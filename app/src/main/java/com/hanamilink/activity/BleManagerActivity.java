@@ -18,6 +18,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.chad.library.adapter.base.BaseQuickAdapter;
+import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.hanamiLink.ble.BLEDeviceManager;
 import com.hanamiLink.ble.BleDevice;
 import com.hanamiLink.eventbus.BleEventType;
@@ -98,6 +100,10 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
         mAdapter = new DeviceAdapter(R.layout.item_device_list, BLEDeviceManager.getInstance().getAllUsedDevices());
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener((adapter, view, position) -> {
+            ToastUtil.toast(this,"连接蓝牙"+position+deviceList.get(position).getIdString());
+
+        });
     }
 
     /**
@@ -105,7 +111,8 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
      */
 
     private void showDevicesData() {
-        mAdapter.setList(BLEDeviceManager.getInstance().getAllDevices());
+        deviceList = BLEDeviceManager.getInstance().getAllDevices();
+        mAdapter.setList(deviceList);
     }
 
     /**
