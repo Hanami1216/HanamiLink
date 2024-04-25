@@ -62,7 +62,7 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
     @Override
     public UUID managerWithServiceUUID() {
-        return UUID.fromString("0000ff12-0000-1000-8000-00805f9b34fb");
+        return UUID.fromString("0000af00-0000-1000-8000-00805f9b34fb");
     }
 
     @Override
@@ -75,6 +75,13 @@ public class BleManagerAdapter extends BleBaseAdapter {
         return new UUID[0];
     }
 
+    /**
+     * @param :
+     * @return List<ScanFilter>
+     * @description 将给定的UUID数组转换成一个列表的ScanFilter对象。
+     * 这些ScanFilter对象用于在BLE扫描中过滤指定的服务UUID。
+     * 这在BLE设备扫描和连接过程中非常有用，例如，通过只连接到带有特定服务UUID的设备。
+     */
     @Override
     public List<ScanFilter> managerWithDeviceScanFilters() {
         UUID[] uuids = managerWithDeviceUUIDArray();

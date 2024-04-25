@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private Button btnNext;
+    //private Button sendData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnNext = findViewById(R.id.button);
+        //sendData = findViewById(R.id.button1);
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -67,6 +69,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+        //sendData.setOnClickListener(new View.OnClickListener() {
+        //    @Override
+        //    public void onClick(View v) {
+        //        // 在主页显示
+        //
+        //        ToastUtil.toast(MainActivity.this,"发送数据");
+        //        //ToastUtil.toast(MainActivity.this,"发送数据"+BLEDeviceManager.getInstance().getDeviceById(BleManagerAdapter.key_idString));
+        //
+        //        //BLEDeviceManager.getInstance().sendData(BLEDeviceManager.getInstance().getDeviceById(BleManagerAdapter.key_idString), );
+        //
+        //    }
+        //});
     }
 
 }

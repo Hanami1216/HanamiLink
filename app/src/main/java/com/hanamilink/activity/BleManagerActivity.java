@@ -2,12 +2,14 @@ package com.hanamilink.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.Manifest;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -102,7 +104,9 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
         rv.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener((adapter, view, position) -> {
             ToastUtil.toast(this,"连接蓝牙"+position+deviceList.get(position).getIdString());
-
+            if (BLEDeviceManager.getInstance().connectDevice(deviceList.get(position))){
+                ToastUtil.toast(this,"连接蓝牙成功"+position+deviceList.get(position).getNameString());
+            }
         });
     }
 
@@ -119,6 +123,7 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
      * 动态权限申请
      */
 
+    @RequiresApi(api = Build.VERSION_CODES.S)
     private void permissionsRequest() {
         EasyPermissions.requestPermissions(
                 this,

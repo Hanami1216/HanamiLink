@@ -547,7 +547,6 @@ public class BLEDeviceManager {
             if (device == null) {
                 device = this.deviceMapDiscover.get(idString);
             }
-
             return device;
         }
     }
@@ -650,90 +649,85 @@ public class BLEDeviceManager {
         }
     }
 
-    public boolean connectDevice(BleDevice device) {
-        if (!this.isBluetoothEnable()) {
+    // 检查设备是否已连接
+    private boolean isDeviceConnected(String deviceId) {
+        return this.deviceMapConnected.containsKey(deviceId);
+    }
+
+    // 连接设备
+// 连接设备
+    private boolean connectToDevice(BleDevice device) {
+        // 如果设备已经连接，则直接返回true
+        if (isDeviceConnected(device.getIdString())) {
+            return true;
+        }
+
+        // 如果已连接设备数量达到设定值且设备连接数量不为1，或者达到连接设备数量上限，则返回false
+        if (this.deviceMapConnected.size() >= this.deviceConnectCount && this.deviceConnectCount != 1) {
+            if (this.bleBaseAdapter != null) {
+                this.bleBaseAdapter.managerDidWarnCountOut();
+            }
             return false;
+        }
+
+        // 如果设备连接数量为1且已连接设备数量为1，且待连接的设备与已连接设备不同，则断开已连接设备
+        if (this.deviceConnectCount == 1 && this.deviceMapConnected.size() == 1) {
+            BleDevice deviceExist = this.getAllUsedDevices().get(0);
+            if (deviceExist != null && !deviceExist.getIdString().equals(device.getIdString())) {
+                this.disconnectDeviceAndRemoveByIDString(deviceExist.getIdString());
+            }
+        }
+        // 设置设备状态为连接中
+        device.setStatus(DevStatus.connecting);
+        // 检查设备是否已经有BluetoothGatt实例
+        BluetoothGatt bluetoothGatt = device.getBluetoothGatt();
+        if (bluetoothGatt != null) {
+            bluetoothGatt.connect();  // 如果已有BluetoothGatt实例，直接调用connect方法
+            return true;
+        } else {
+            BluetoothDevice btDevice = this.mBluetoothAdapter.getRemoteDevice(device.getIdString());
+            if (btDevice == null) {
+                // 如果设备未找到，则记录日志并设置设备状态为断开
+                Log.w(TAG, "Device not found.  Unable to connect.");
+                device.setStatus(DevStatus.disconnect);
+                return false;
+            }
+
+            // 尝试连接Gatt服务器，如果连接成功则将BluetoothGatt实例关联到设备并返回true，否则设置设备状态为断开并返回false
+            bluetoothGatt = btDevice.connectGatt(this.mContext, false, this.mGattCallback);
+            if (bluetoothGatt != null) {
+                device.setBluetoothGatt(bluetoothGatt);
+                return true;
+            } else {
+                device.setStatus(DevStatus.disconnect);
+                return false;
+            }
+        }
+    }
+
+
+    public boolean connectDevice(BleDevice device) {
+        if (device == null) {
+            return false; // 如果设备为null，返回false
+        }
+
+        if (!this.isBluetoothEnable()) {
+            return false; // 如果蓝牙未开启，返回false
         } else {
             Log.e(TAG, "connectDevice:" + device.getIdString());
             if (this.isBleScanning || this.mBluetoothAdapter.isDiscovering()) {
                 this.stopBLEScan();
             }
 
-            if (device != null && device.getDevice() != null) {
-                if (device.getStatus() == DevStatus.connecting) {
-                    Log.e(TAG, device.getIdString() + "  connecting , cancel");
-                } else if (device.getStatus() == DevStatus.disconnect || device.getStatus() == DevStatus.Unknown) {
-                    BluetoothGatt bluetoothGatt;
-                    BluetoothDevice btDevice;
-                    if (this.deviceMapConnected.containsKey(device.getIdString())) {
-                        device.setStatus(DevStatus.connecting);
-                        bluetoothGatt = device.getBluetoothGatt();
-                        if (bluetoothGatt != null) {
-                            return bluetoothGatt.connect();
-                        }
-
-                        btDevice = this.mBluetoothAdapter.getRemoteDevice(device.getIdString());
-                        if (btDevice == null) {
-                            Log.w(TAG, "Device not found.  Unable to connect.");
-                            return false;
-                        }
-
-                        bluetoothGatt = btDevice.connectGatt(this.mContext, false, this.mGattCallback);
-                        if (bluetoothGatt != null) {
-                            device.setBluetoothGatt(bluetoothGatt);
-                        } else {
-                            device.setStatus(DevStatus.disconnect);
-                        }
-
-                        Log.e(TAG, "connect device");
-                    } else {
-                        if (this.deviceMapConnected.size() >= this.deviceConnectCount && this.deviceConnectCount != 1) {
-                            if (this.bleBaseAdapter != null) {
-                                this.bleBaseAdapter.managerDidWarnCountOut();
-                            }
-
-                            return false;
-                        }
-
-                        if (this.deviceConnectCount == 1 && this.deviceMapConnected.size() == 1) {
-                            BleDevice deviceExist = this.getAllUsedDevices().get(0);
-                            if (deviceExist != null && !deviceExist.getIdString().equals(device.getIdString())) {
-                                this.disconnectDeviceAndRemoveByIDString(deviceExist.getIdString());
-                            }
-                        }
-
-                        device.setStatus(DevStatus.connecting);
-                        this.deviceMapConnected.put(device.getIdString(), device);
-                        if (this.bleBaseAdapter != null) {
-                            this.bleBaseAdapter.managerDidAddNewDevice(device);
-                        }
-
-                        bluetoothGatt = device.getBluetoothGatt();
-                        if (bluetoothGatt != null) {
-                            return bluetoothGatt.connect();
-                        }
-
-                        btDevice = this.mBluetoothAdapter.getRemoteDevice(device.getIdString());
-                        if (btDevice == null) {
-                            Log.w(TAG, "Device not found.  Unable to connect.");
-                            return false;
-                        }
-
-                        bluetoothGatt = btDevice.connectGatt(this.mContext, false, this.mGattCallback);
-                        if (bluetoothGatt != null) {
-                            device.setBluetoothGatt(bluetoothGatt);
-                        } else {
-                            device.setStatus(DevStatus.disconnect);
-                        }
-
-                        Log.e(TAG, "connect device");
-                    }
-                }
+            if (device.getStatus() == DevStatus.connecting) {
+                Log.e(TAG, device.getIdString() + "  connecting , cancel");
+            } else if (device.getStatus() == DevStatus.disconnect || device.getStatus() == DevStatus.Unknown) {
+                return connectToDevice(device);
             }
-
             return true;
         }
     }
+
 
     public void sendData(BleDevice device, byte[] data) {
         if (this.isBluetoothEnable()) {
@@ -826,25 +820,38 @@ public class BLEDeviceManager {
         }
     }
 
+    /**
+     * 显示并处理BLE设备的GATT服务
+     *
+     * @param device BLE设备对象
+     * @param gatt   BluetoothGatt对象，表示与BLE设备的GATT连接
+     */
     private void displayGattServices(BleDevice device, BluetoothGatt gatt) {
+        // 检查设备和BluetoothGatt对象是否不为null
         if (device != null && device.getBluetoothGatt() != null) {
+            // 获取设备的GATT服务列表
             List<BluetoothGattService> gattServices = device.getBluetoothGatt().getServices();
+            // 清空设备的CharacteristicNotify、CharacteristicWrite、CharacteristicRead属性
             device.setCharacteristicNotify(null);
             device.setCharacteristicWrite(null);
             device.setCharacteristicRead(null);
-            Iterator var4 = gattServices.iterator();
 
-            while (var4.hasNext()) {
-                BluetoothGattService gattService = (BluetoothGattService) var4.next();
+            // 遍历设备的GATT服务列表
+            for (BluetoothGattService gattService : gattServices) {
+                // 获取该GATT服务的类型（type）以及包含的服务数量，并记录日志
                 int type = gattService.getType();
                 Log.e(TAG, "-->service includedServices size:" + gattService.getIncludedServices().size());
+                // 获取该GATT服务的UUID，并记录日志
                 Log.e(TAG, "-->service uuid:" + gattService.getUuid());
-                if (gattService.getUuid() != null && this.bleBaseAdapter.managerWithServiceUUIDPrefixString() != null && gattService.getUuid().toString().toLowerCase().startsWith(this.bleBaseAdapter.managerWithServiceUUIDPrefixString())) {
-                    List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
-                    Iterator var8 = gattCharacteristics.iterator();
 
-                    while (var8.hasNext()) {
-                        BluetoothGattCharacteristic gattCharacteristic = (BluetoothGattCharacteristic) var8.next();
+                // 检查GATT服务的UUID是否以指定的前缀开头
+                if (gattService.getUuid() != null && bleBaseAdapter.managerWithServiceUUIDPrefixString() != null &&
+                        gattService.getUuid().toString().toLowerCase().startsWith(bleBaseAdapter.managerWithServiceUUIDPrefixString())) {
+                    // 获取该GATT服务包含的所有Characteristic
+                    List<BluetoothGattCharacteristic> gattCharacteristics = gattService.getCharacteristics();
+                    // 遍历每个Characteristic
+                    for (BluetoothGattCharacteristic gattCharacteristic : gattCharacteristics) {
+                        // 获取Characteristic的权限、属性、写入类型，并记录日志
                         int permission = gattCharacteristic.getPermissions();
                         int property = gattCharacteristic.getProperties();
                         int writeType = gattCharacteristic.getWriteType();
@@ -852,34 +859,45 @@ public class BLEDeviceManager {
                         Log.e(TAG, "-->Characteristic DescPermission:" + BLEUtils.getDescPermission(property));
                         Log.e(TAG, "-->Characteristic permission:" + BLEUtils.getCharPermission(permission));
                         Log.e(TAG, "-->Characteristic property:" + BLEUtils.getCharPropertie(property));
-                        if (gattCharacteristic.getUuid() != null && this.bleBaseAdapter != null && gattCharacteristic.getUuid().toString().startsWith(this.bleBaseAdapter.deviceUUID4CharacteristicNotify())) {
+
+                        // 检查Characteristic的UUID是否以设备UUID4CharacteristicNotify前缀开头
+                        if (gattCharacteristic.getUuid() != null && bleBaseAdapter != null &&
+                                gattCharacteristic.getUuid().toString().startsWith(bleBaseAdapter.deviceUUID4CharacteristicNotify())) {
+                            // 设置设备的CharacteristicNotify
                             device.setCharacteristicNotify(gattCharacteristic);
-                            this.setCharacteristicNotification(device, true, gatt);
+                            // 设置Characteristic通知
+                            setCharacteristicNotification(device, true, gatt);
                         }
 
-                        if (gattCharacteristic.getUuid() != null && this.bleBaseAdapter != null && gattCharacteristic.getUuid().toString().startsWith(this.bleBaseAdapter.deviceUUID4CharacteristicWrite())) {
+                        // 检查Characteristic的UUID是否以设备UUID4CharacteristicWrite前缀开头
+                        if (gattCharacteristic.getUuid() != null && bleBaseAdapter != null &&
+                                gattCharacteristic.getUuid().toString().startsWith(bleBaseAdapter.deviceUUID4CharacteristicWrite())) {
+                            // 设置Characteristic写入类型
                             gattCharacteristic.setWriteType(2);
+                            // 设置设备的CharacteristicWrite
                             device.setCharacteristicWrite(gattCharacteristic);
                         }
 
+                        // 如果设备已经获取到CharacteristicNotify和CharacteristicWrite，则记录日志，并退出当前循环
                         if (device.getCharacteristicNotify() != null && device.getCharacteristicWrite() != null) {
                             Log.e(TAG, "设备已获取所有Characteristic");
                             break;
                         }
                     }
 
+                    // 如果设备已经获取到CharacteristicNotify和CharacteristicWrite，则记录日志，并通知管理器已准备好写入和收到通知
                     if (device.getCharacteristicNotify() != null && device.getCharacteristicWrite() != null) {
                         Log.e(TAG, "发现可用的设备");
-                        if (this.bleBaseAdapter != null) {
-                            this.bleBaseAdapter.managerDidReadyWriteAndNotify(device);
+                        if (bleBaseAdapter != null) {
+                            bleBaseAdapter.managerDidReadyWriteAndNotify(device);
                         }
                         break;
                     }
                 }
             }
-
         }
     }
+
 
     public void destroy() {
         this.stopDelaySendTimer();
