@@ -75,8 +75,7 @@ public class MainActivity extends AppCompatActivity {
                 // 在主页显示
                 String idString = BLEDeviceManager.getInstance().getSelectedIdString();
                 BleDevice device = BLEDeviceManager.getInstance().getDeviceById(idString);
-                byte data[]=new byte[]{0,1,0};
-
+                byte data[] = new byte[]{0x12, 0x34};
                 if(device != null)
                 {
                     BLEDeviceManager.getInstance().sendData(device,data);

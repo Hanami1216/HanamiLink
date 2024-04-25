@@ -200,11 +200,12 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
 
     public void deviceReceiveDatawithDevice(BleDevice device, byte[] data) {
+
         // 调用 BleDevice 的 getNameString 方法，但未使用返回值
         device.getNameString();
 
         // 输出带有“deviceReceiveData-withDevice:”标签和 data 的十六进制字符串
-        Log.e(TAG, "deviceReceiveData-withDevice:" + BLEUtils.bytesToHexString(data));
+        Log.e(TAG, "deviceReceiveData-withDevice:" + data);
 
         // 检查数据是否为 null 或长度小于 3，是则立即返回
         if (data == null || data.length < 3) {

@@ -29,6 +29,7 @@ import com.hanamiLink.eventbus.BleEventType;
 import com.hanamiLink.eventbus.BleEventUtils;
 import com.hanamiLink.utils.BlePrefUtil;
 import com.hanamiLink.utils.BLEUtils;
+import com.hanamiLink.utils.ToastUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -75,6 +76,7 @@ public class BLEDeviceManager {
     Runnable disconnectRunnable = null;  // 断开连接的Runnable任务
 
     private final BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
+        private final String TAG = BLEDeviceManager.class.getSimpleName();
         /**
          * 当连接状态发生改变时调用的方法。
          *
@@ -159,7 +161,10 @@ public class BLEDeviceManager {
             String idString = gatt.getDevice().getAddress();
             if (BLEDeviceManager.this.bleBaseAdapter != null) {
                 BleDevice device = BLEDeviceManager.this.deviceMapConnected.get(idString);
+
+                String data = characteristic.getValue().toString();
                 if (device != null) {
+                    // 这里接受数据并处理
                     BLEDeviceManager.this.bleBaseAdapter.deviceReceiveDatawithDevice(device, characteristic.getValue());
                 }
             }
@@ -812,24 +817,37 @@ public class BLEDeviceManager {
 
     }
 
+    /**
+     * 设置BLE设备的特征通知属性
+     * @param device BLE设备
+     * @param enabled 是否启用特征通知
+     * @param gatt 与BLE设备的GATT连接
+     */
     private void setCharacteristicNotification(BleDevice device, boolean enabled, BluetoothGatt gatt) {
+        // 确保BluetoothAdapter和BluetoothGatt已经初始化和连接
         if (this.mBluetoothAdapter != null && device.getBluetoothGatt() != null) {
+            // 设置BLE设备的特征通知属性
             gatt.setCharacteristicNotification(device.getCharacteristicNotify(), enabled);
-            Log.w(TAG, "setCharacteristicNotification.......");
+            // 记录日志，显示特征通知设置中
+            Log.e(TAG, "setCharacteristicNotification.......");
+            // 获取特征通知的描述符列表
             List<BluetoothGattDescriptor> descriptors = device.getCharacteristicNotify().getDescriptors();
+            // 迭代器遍历每个特征通知的描述符
             Iterator var5 = descriptors.iterator();
-
             while (var5.hasNext()) {
                 BluetoothGattDescriptor dp = (BluetoothGattDescriptor) var5.next();
+                // 设置描述符的值为ENABLE_NOTIFICATION_VALUE，并将其写入设备
                 dp.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
                 device.getBluetoothGatt().writeDescriptor(dp);
-                Log.w(TAG, "setCharacteristicNotification  successful.......");
+                // 记录日志，显示特征通知设置成功
+                Log.e(TAG, "setCharacteristicNotification  successful.......");
             }
-
         } else {
-            Log.w(TAG, "BluetoothAdapter not initialized");
+            // 输出日志，显示BluetoothAdapter未初始化
+            Log.e(TAG, "BluetoothAdapter not initialized");
         }
     }
+
 
     /**
      * 显示并处理BLE设备的GATT服务

@@ -142,5 +142,5 @@ public abstract class BleBaseAdapter {
      * @param var1 接收数据的设备对象
      * @param var2 接收到的数据
      */
-    public abstract void deviceReceiveDatawithDevice(BleDevice var1, byte[] var2);
+    public abstract void deviceReceiveDatawithDevice(BleDevice device, byte[] data);
 }
