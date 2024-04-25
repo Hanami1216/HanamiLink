@@ -175,12 +175,12 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
     @Override
     public String deviceUUID4CharacteristicNotify() {
-        return "0000ff14";
+        return "0000af02";
     }
 
     @Override
     public String deviceUUID4CharacteristicWrite() {
-        return "0000ff14";
+        return "0000af01";
     }
 
     @Override
