@@ -49,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private Button btnNext;
-    //private Button sendData;
+    private Button sendData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         btnNext = findViewById(R.id.button);
-        //sendData = findViewById(R.id.button1);
+        sendData = findViewById(R.id.button1);
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -69,18 +69,24 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-        //sendData.setOnClickListener(new View.OnClickListener() {
-        //    @Override
-        //    public void onClick(View v) {
-        //        // 在主页显示
-        //
-        //        ToastUtil.toast(MainActivity.this,"发送数据");
-        //        //ToastUtil.toast(MainActivity.this,"发送数据"+BLEDeviceManager.getInstance().getDeviceById(BleManagerAdapter.key_idString));
-        //
-        //        //BLEDeviceManager.getInstance().sendData(BLEDeviceManager.getInstance().getDeviceById(BleManagerAdapter.key_idString), );
-        //
-        //    }
-        //});
+        sendData.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 在主页显示
+                String idString = BLEDeviceManager.getInstance().getSelectedIdString();
+                BleDevice device = BLEDeviceManager.getInstance().getDeviceById(idString);
+                byte data[]=new byte[]{0,1,0};
+
+                if(device != null)
+                {
+                    BLEDeviceManager.getInstance().sendData(device,data);
+                }
+                ToastUtil.toast(MainActivity.this,"发送数据"+data);
+
+                //BLEDeviceManager.getInstance().sendData(BLEDeviceManager.getInstance().getDeviceById(BleManagerAdapter.key_idString), );
+
+            }
+        });
     }
 
 }

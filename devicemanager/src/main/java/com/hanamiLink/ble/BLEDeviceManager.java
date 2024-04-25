@@ -654,76 +654,87 @@ public class BLEDeviceManager {
         return this.deviceMapConnected.containsKey(deviceId);
     }
 
-    // 连接设备
-// 连接设备
-    private boolean connectToDevice(BleDevice device) {
-        // 如果设备已经连接，则直接返回true
-        if (isDeviceConnected(device.getIdString())) {
-            return true;
-        }
-
-        // 如果已连接设备数量达到设定值且设备连接数量不为1，或者达到连接设备数量上限，则返回false
-        if (this.deviceMapConnected.size() >= this.deviceConnectCount && this.deviceConnectCount != 1) {
-            if (this.bleBaseAdapter != null) {
-                this.bleBaseAdapter.managerDidWarnCountOut();
-            }
-            return false;
-        }
-
-        // 如果设备连接数量为1且已连接设备数量为1，且待连接的设备与已连接设备不同，则断开已连接设备
-        if (this.deviceConnectCount == 1 && this.deviceMapConnected.size() == 1) {
-            BleDevice deviceExist = this.getAllUsedDevices().get(0);
-            if (deviceExist != null && !deviceExist.getIdString().equals(device.getIdString())) {
-                this.disconnectDeviceAndRemoveByIDString(deviceExist.getIdString());
-            }
-        }
-        // 设置设备状态为连接中
-        device.setStatus(DevStatus.connecting);
-        // 检查设备是否已经有BluetoothGatt实例
-        BluetoothGatt bluetoothGatt = device.getBluetoothGatt();
-        if (bluetoothGatt != null) {
-            bluetoothGatt.connect();  // 如果已有BluetoothGatt实例，直接调用connect方法
-            return true;
-        } else {
-            BluetoothDevice btDevice = this.mBluetoothAdapter.getRemoteDevice(device.getIdString());
-            if (btDevice == null) {
-                // 如果设备未找到，则记录日志并设置设备状态为断开
-                Log.w(TAG, "Device not found.  Unable to connect.");
-                device.setStatus(DevStatus.disconnect);
-                return false;
-            }
-
-            // 尝试连接Gatt服务器，如果连接成功则将BluetoothGatt实例关联到设备并返回true，否则设置设备状态为断开并返回false
-            bluetoothGatt = btDevice.connectGatt(this.mContext, false, this.mGattCallback);
-            if (bluetoothGatt != null) {
-                device.setBluetoothGatt(bluetoothGatt);
-                return true;
-            } else {
-                device.setStatus(DevStatus.disconnect);
-                return false;
-            }
-        }
-    }
-
-
     public boolean connectDevice(BleDevice device) {
-        if (device == null) {
-            return false; // 如果设备为null，返回false
-        }
-
         if (!this.isBluetoothEnable()) {
-            return false; // 如果蓝牙未开启，返回false
+            return false;
         } else {
             Log.e(TAG, "connectDevice:" + device.getIdString());
             if (this.isBleScanning || this.mBluetoothAdapter.isDiscovering()) {
                 this.stopBLEScan();
             }
 
-            if (device.getStatus() == DevStatus.connecting) {
-                Log.e(TAG, device.getIdString() + "  connecting , cancel");
-            } else if (device.getStatus() == DevStatus.disconnect || device.getStatus() == DevStatus.Unknown) {
-                return connectToDevice(device);
+            if (device != null && device.getDevice() != null) {
+                if (device.getStatus() == DevStatus.connecting) {
+                    Log.e(TAG, device.getIdString() + "  connecting , cancel");
+                } else if (device.getStatus() == DevStatus.disconnect || device.getStatus() == DevStatus.Unknown) {
+                    BluetoothGatt bluetoothGatt;
+                    BluetoothDevice btDevice;
+                    if (this.deviceMapConnected.containsKey(device.getIdString())) {
+                        device.setStatus(DevStatus.connecting);
+                        bluetoothGatt = device.getBluetoothGatt();
+                        if (bluetoothGatt != null) {
+                            return bluetoothGatt.connect();
+                        }
+
+                        btDevice = this.mBluetoothAdapter.getRemoteDevice(device.getIdString());
+                        if (btDevice == null) {
+                            Log.w(TAG, "Device not found.  Unable to connect.");
+                            return false;
+                        }
+
+                        bluetoothGatt = btDevice.connectGatt(this.mContext, false, this.mGattCallback);
+                        if (bluetoothGatt != null) {
+                            device.setBluetoothGatt(bluetoothGatt);
+                        } else {
+                            device.setStatus(DevStatus.disconnect);
+                        }
+
+                        Log.e(TAG, "connect device");
+                    } else {
+                        if (this.deviceMapConnected.size() >= this.deviceConnectCount && this.deviceConnectCount != 1) {
+                            if (this.bleBaseAdapter != null) {
+                                this.bleBaseAdapter.managerDidWarnCountOut();
+                            }
+
+                            return false;
+                        }
+
+                        if (this.deviceConnectCount == 1 && this.deviceMapConnected.size() == 1) {
+                            BleDevice deviceExist = this.getAllUsedDevices().get(0);
+                            if (deviceExist != null && !deviceExist.getIdString().equals(device.getIdString())) {
+                                this.disconnectDeviceAndRemoveByIDString(deviceExist.getIdString());
+                            }
+                        }
+
+                        device.setStatus(DevStatus.connecting);
+                        this.deviceMapConnected.put(device.getIdString(), device);
+                        if (this.bleBaseAdapter != null) {
+                            this.bleBaseAdapter.managerDidAddNewDevice(device);
+                        }
+
+                        bluetoothGatt = device.getBluetoothGatt();
+                        if (bluetoothGatt != null) {
+                            return bluetoothGatt.connect();
+                        }
+
+                        btDevice = this.mBluetoothAdapter.getRemoteDevice(device.getIdString());
+                        if (btDevice == null) {
+                            Log.w(TAG, "Device not found.  Unable to connect.");
+                            return false;
+                        }
+
+                        bluetoothGatt = btDevice.connectGatt(this.mContext, false, this.mGattCallback);
+                        if (bluetoothGatt != null) {
+                            device.setBluetoothGatt(bluetoothGatt);
+                        } else {
+                            device.setStatus(DevStatus.disconnect);
+                        }
+
+                        Log.e(TAG, "connect device");
+                    }
+                }
             }
+
             return true;
         }
     }

@@ -86,7 +86,7 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
         setContentView(R.layout.activity_ble_manager);
 
         StatusBarUtil.StatusBarLightMode(this);//状态栏黑色字体
-        initBLE();
+
         initView();//初始化控件
 
     }
@@ -103,11 +103,13 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
         rv.setLayoutManager(new LinearLayoutManager(this));
         rv.setAdapter(mAdapter);
         mAdapter.setOnItemClickListener((adapter, view, position) -> {
-            ToastUtil.toast(this,"连接蓝牙"+position+deviceList.get(position).getIdString());
-            if (BLEDeviceManager.getInstance().connectDevice(deviceList.get(position))){
-                ToastUtil.toast(this,"连接蓝牙成功"+position+deviceList.get(position).getNameString());
+            BleDevice device = deviceList.get(position);
+            if (BLEDeviceManager.getInstance().connectDevice(device)){
+                ToastUtil.toast(this,"连接蓝牙成功"+position+device.getIdString());
+                BLEDeviceManager.getInstance().stopBLEScan();
             }
         });
+
     }
 
     /**
@@ -181,7 +183,9 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
             //BLEManager.getInstance().startConnectTimeoutTimer();
         } else {
             // 请求权限
-            permissionsRequest();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                permissionsRequest();
+            }
         }
     }
 
@@ -202,6 +206,7 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
      */
     @Override
     public void onClick(@NonNull View v) {
+        initBLE();
         if (v.getId() == R.id.scan_devices) {
             showMsg("扫描蓝牙");
             BLEDeviceManager.getInstance().startBLEScan();

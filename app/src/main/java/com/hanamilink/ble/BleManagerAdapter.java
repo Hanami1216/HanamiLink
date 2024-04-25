@@ -67,7 +67,7 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
     @Override
     public String managerWithServiceUUIDPrefixString() {
-        return "0000ff12";
+        return "0000af00";
     }
 
     @Override
