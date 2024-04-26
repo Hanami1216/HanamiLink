@@ -99,17 +99,26 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
         rv = findViewById(R.id.rv);
         scanDevices.setOnClickListener(this);
         // 蓝牙设备列表
-        mAdapter = new DeviceAdapter(R.layout.item_device_list, BLEDeviceManager.getInstance().getAllUsedDevices());
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        rv.setAdapter(mAdapter);
-        mAdapter.setOnItemClickListener((adapter, view, position) -> {
-            BleDevice device = deviceList.get(position);
-            if (BLEDeviceManager.getInstance().connectDevice(device)){
-                ToastUtil.toast(this,"连接蓝牙成功"+position+device.getIdString());
-                BLEDeviceManager.getInstance().stopBLEScan();
-            }
-        });
-
+        deviceList =  BLEDeviceManager.getInstance().getAllUsedDevices();
+        if(deviceList != null){
+            mAdapter = new DeviceAdapter(R.layout.item_device_list,deviceList);
+            rv.setLayoutManager(new LinearLayoutManager(this));
+            rv.setAdapter(mAdapter);
+            mAdapter.setOnItemClickListener((adapter, view, position) -> {
+                if (position < deviceList.size()) {
+                    BleDevice device = deviceList.get(position);
+                    if (BLEDeviceManager.getInstance().connectDevice(device)){
+                        ToastUtil.toast(this,"连接蓝牙成功"+position+device.getIdString());
+                        BLEDeviceManager.getInstance().stopBLEScan();
+                    }
+                }
+            });
+        } else {
+            // 没有蓝牙设备，不注册点击事件
+            mAdapter = new DeviceAdapter(R.layout.item_device_list,null);
+            rv.setLayoutManager(new LinearLayoutManager(this));
+            rv.setAdapter(mAdapter);
+        }
     }
 
     /**
@@ -118,6 +127,17 @@ public class BleManagerActivity extends AppCompatActivity implements View.OnClic
 
     private void showDevicesData() {
         deviceList = BLEDeviceManager.getInstance().getAllDevices();
+        if(deviceList!=null){
+            mAdapter.setOnItemClickListener((adapter, view, position) -> {
+                if (position < deviceList.size()) {
+                    BleDevice device = deviceList.get(position);
+                    if (BLEDeviceManager.getInstance().connectDevice(device)){
+                        ToastUtil.toast(this,"连接蓝牙成功"+position+device.getIdString());
+                        BLEDeviceManager.getInstance().stopBLEScan();
+                    }
+                }
+            });
+        }
         mAdapter.setList(deviceList);
     }
 
