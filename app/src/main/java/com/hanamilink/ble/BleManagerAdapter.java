@@ -198,14 +198,19 @@ public class BleManagerAdapter extends BleBaseAdapter {
         BleEventUtils.postMsgWithObject(BleEventType.BLE_TOAST_TIP.toNumber(), "超出可使用的设备数量!");
     }
 
-
+    /**
+     * @param device:
+     * @param data:
+     * @return void
+     * @description 处理蓝牙数据
+     */
     public void deviceReceiveDatawithDevice(BleDevice device, byte[] data) {
 
         // 调用 BleDevice 的 getNameString 方法，但未使用返回值
         device.getNameString();
 
         // 输出带有“deviceReceiveData-withDevice:”标签和 data 的十六进制字符串
-        Log.e(TAG, "deviceReceiveData-withDevice:" + data);
+        Log.e(TAG, "deviceReceiveData-withDevice:" + Arrays.toString(data));
 
         // 检查数据是否为 null 或长度小于 3，是则立即返回
         if (data == null || data.length < 3) {
