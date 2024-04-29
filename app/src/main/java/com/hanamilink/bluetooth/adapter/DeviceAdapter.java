@@ -101,7 +101,10 @@ public class DeviceAdapter extends BaseQuickAdapter<BleDevice, BaseViewHolder>{
             helper.setText(R.id.tv_name, item.getNameString());
         }
         ImageView imageView = helper.getView(R.id.iv_device_type);
-        getDeviceType(item.getDevice().getBluetoothClass().getMajorDeviceClass(), imageView);
+            // 出现空指针异常
+            //getDeviceType(item.getDevice().getBluetoothClass().getMajorDeviceClass(), imageView);
+
+
 
         //蓝牙设备绑定状态判断
         switch (item.getStatus()) {
