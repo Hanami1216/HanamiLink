@@ -16,12 +16,14 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.hanamiLink.ble.BLEDeviceManager;
 import com.hanamiLink.ble.BleDevice;
 import com.hanamiLink.utils.PermissionUtils;
@@ -58,6 +60,9 @@ public class MainActivity extends AppCompatActivity {
 
         btnNext = findViewById(R.id.button);
         sendData = findViewById(R.id.button1);
+        // 在Activity中设置BottomNavigationView的选项和监听器
+        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
+
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
