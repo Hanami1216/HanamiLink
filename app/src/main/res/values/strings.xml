@@ -26,4 +26,8 @@
 
     <string name="tip_Permission_Granted">Permission Granted!</string>
     <string name="tip_Permission_Denied">Permission Denied!</string>
+    <string name="title_activity_bottom_navigation">BottomNavigationActivity</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_notifications">Notifications</string>
 </resources>

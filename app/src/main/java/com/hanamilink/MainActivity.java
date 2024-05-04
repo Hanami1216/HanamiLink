@@ -30,6 +30,7 @@ import com.hanamiLink.utils.PermissionUtils;
 import com.hanamiLink.utils.StatusBarUtil;
 import com.hanamiLink.utils.ToastUtil;
 import com.hanamilink.activity.BleManagerActivity;
+import com.hanamilink.activity.BottomNavigationActivity;
 import com.hanamilink.ble.BleManagerAdapter;
 import com.hanamilink.bluetooth.adapter.DeviceAdapter;
 
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
 
     private Button btnNext;
     private Button sendData;
+    // 跳转底部导航栏
+    private Button jumpBviews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,9 +63,18 @@ public class MainActivity extends AppCompatActivity {
 
         btnNext = findViewById(R.id.button);
         sendData = findViewById(R.id.button1);
-        // 在Activity中设置BottomNavigationView的选项和监听器
-        BottomNavigationView bottomNavigationView = findViewById(R.id.bottom_navigation);
-
+        jumpBviews = findViewById(R.id.button2);
+        jumpBviews.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // 创建Intent对象，指定目标Activity的类名
+                Intent intent = new Intent(MainActivity.this, BottomNavigationActivity.class);
+                // 传递字符串参数
+                intent.putExtra("message", "Hello from MainActivity!");
+                // 启动目标Activity
+                startActivity(intent);
+            }
+        });
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

@@ -8,9 +8,7 @@
         android:fitsSystemWindows="true"
         tools:context=".MainActivity">
 
-<com.xuexiang.xui.widget.grouplist.XUICommonListItemView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+
     <Button
             android:id="@+id/button"
             android:layout_width="238dp"
@@ -18,10 +16,10 @@
             android:text="点击跳转蓝牙控制"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
-            android:layout_marginTop="16dp" />
+            app:layout_constraintHorizontal_bias="0.496"
+            tools:layout_editor_absoluteY="144dp" />
 
     <Button
             android:id="@+id/button1"
@@ -33,11 +31,19 @@
             app:layout_constraintTop_toBottomOf="@id/button"
             android:layout_marginStart="16dp"
             android:layout_marginEnd="16dp"
+            android:layout_marginTop="116dp" />
+
+    <Button
+            android:id="@+id/button2"
+            android:layout_width="238dp"
+            android:layout_height="wrap_content"
+            android:text="点击跳转底部导航栏控制"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/button1"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             android:layout_marginTop="16dp" />
-
-</com.xuexiang.xui.widget.grouplist.XUICommonListItemView>
-
-
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
             android:id="@+id/bottom_navigation"
