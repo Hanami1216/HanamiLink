@@ -185,13 +185,19 @@ public class BleManagerAdapter extends BleBaseAdapter {
 
     @Override
     public void managerDidReadyWriteAndNotify(BleDevice bleDevice) {
+        // 发送设备已连接的消息，通知其他组件设备已连接，并将蓝牙设备的名称作为对象一起发送
         BleEventUtils.postMsgWithObject(BleEventType.BLE_DEVICE_CONNECTED.toNumber(), bleDevice.getNameString());
-        new Handler(Looper.getMainLooper()).postDelayed(() -> {
-            BLEDeviceManager.getInstance().sendDataDelay(bleDevice, CMD.getQuerySystemModeType());
-            BLEDeviceManager.getInstance().sendDataDelay(bleDevice, CMD.getQuerySystemStatusType());
-        }, 2000);
 
+        // 使用 Handler 在主线程中延迟一段时间后执行发送数据的操作
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
+            // TODO 发送数据
+            // 发送查询系统模式类型的数据到蓝牙设备
+            //BLEDeviceManager.getInstance().sendDataDelay(bleDevice, CMD.getQuerySystemModeType());
+            // 发送查询系统状态类型的数据到蓝牙设备
+            //BLEDeviceManager.getInstance().sendDataDelay(bleDevice, CMD.getQuerySystemStatusType());
+        }, 2000); // 延迟 2000 毫秒（即 2 秒）
     }
+
 
     @Override
     public void managerDidWarnCountOut() {
