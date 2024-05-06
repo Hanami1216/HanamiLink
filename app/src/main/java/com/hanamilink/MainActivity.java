@@ -25,16 +25,25 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        // 使用 Data Binding 绑定底部导航栏相关的视图
         binding = ActivityBottomNavigationBinding.inflate(getLayoutInflater());
+        // 将布局文件中的根视图设置为当前 activity 的内容视图
         setContentView(binding.getRoot());
 
+        // 查找并获取底部导航栏的视图对象
         BottomNavigationView navView = findViewById(R.id.nav_view);
+
+        // 创建用于配置顶部应用栏行为的 AppBarConfiguration 实例
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_ble_manager)
                 .build();
+
+        // 获取与当前 activity 关联的导航控制器
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_bottom_navigation);
-        NavigationUI.setupWithNavController(navView, navController);
+
+        // 配置底部导航栏与导航控制器之间的关联，确保正确处理导航操作
         NavigationUI.setupWithNavController(binding.navView, navController);
+
     }
 
 }
