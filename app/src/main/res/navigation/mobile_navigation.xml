@@ -19,7 +19,7 @@
 
     <fragment
             android:id="@+id/navigation_notifications"
-            android:name="com.hanamilink.activity.ui.notifications.NotificationsFragment"
+            android:name="com.hanamilink.activity.ui.notifications.BleManagerFragment"
             android:label="@string/title_notifications"
-            tools:layout="@layout/fragment_notifications" />
+            tools:layout="@layout/fragment_ble_manager" />
 </navigation>
