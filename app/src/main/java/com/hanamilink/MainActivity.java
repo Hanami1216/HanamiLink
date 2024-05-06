@@ -5,6 +5,10 @@ package com.hanamilink;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.ui.AppBarConfiguration;
+import androidx.navigation.ui.NavigationUI;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +37,7 @@ import com.hanamilink.activity.BleManagerActivity;
 import com.hanamilink.activity.BottomNavigationActivity;
 import com.hanamilink.ble.BleManagerAdapter;
 import com.hanamilink.bluetooth.adapter.DeviceAdapter;
+import com.hanamilink.databinding.ActivityBottomNavigationBinding;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -50,59 +55,24 @@ public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
+    private ActivityBottomNavigationBinding binding;
 
-    private Button btnNext;
-    private Button sendData;
-    // 跳转底部导航栏
-    private Button jumpBviews;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        btnNext = findViewById(R.id.button);
-        sendData = findViewById(R.id.button1);
-        jumpBviews = findViewById(R.id.button2);
-        jumpBviews.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 创建Intent对象，指定目标Activity的类名
-                Intent intent = new Intent(MainActivity.this, BottomNavigationActivity.class);
-                // 传递字符串参数
-                intent.putExtra("message", "Hello from MainActivity!");
-                // 启动目标Activity
-                startActivity(intent);
-            }
-        });
-        btnNext.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 创建Intent对象，指定目标Activity的类名
-                Intent intent = new Intent(MainActivity.this, BleManagerActivity.class);
-                // 传递字符串参数
-                intent.putExtra("message", "Hello from MainActivity!");
-                // 启动目标Activity
-                startActivity(intent);
-            }
-        });
-        sendData.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // 在主页显示
-                String idString = BLEDeviceManager.getInstance().getSelectedIdString();
-                BleDevice device = BLEDeviceManager.getInstance().getDeviceById(idString);
-                byte data[] = new byte[]{0x12, 0x34};
-                if(device != null)
-                {
-                    BLEDeviceManager.getInstance().sendData(device,data);
-                }
-                ToastUtil.toast(MainActivity.this,"发送数据"+data);
+        binding = ActivityBottomNavigationBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-                //BLEDeviceManager.getInstance().sendData(BLEDeviceManager.getInstance().getDeviceById(BleManagerAdapter.key_idString), );
-
-            }
-        });
+        BottomNavigationView navView = findViewById(R.id.nav_view);
+        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
+                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications)
+                .build();
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_bottom_navigation);
+        NavigationUI.setupWithNavController(navView, navController);
+        NavigationUI.setupWithNavController(binding.navView, navController);
     }
 
 }
