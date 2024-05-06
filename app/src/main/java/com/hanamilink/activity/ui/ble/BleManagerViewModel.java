@@ -1,4 +1,4 @@
-package com.hanamilink.activity.ui.notifications;
+package com.hanamilink.activity.ui.ble;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -10,7 +10,7 @@ public class BleManagerViewModel extends ViewModel {
 
     public BleManagerViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is notifications fragment");
+        mText.setValue("This is ble fragment");
     }
 
     public LiveData<String> getText() {
