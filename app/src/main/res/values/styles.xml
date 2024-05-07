@@ -7,5 +7,53 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+    <declare-styleable name="EqWaveView">
+        <attr name="topLineColor" format="color|reference" />
+        <attr name="contentStartColor" format="color|reference" />
+        <attr name="contentEndColor" format="color|reference" />
+        <attr name="topLineDisableColor" format="color|reference" />
+        <attr name="contentStartDisableColor" format="color|reference" />
+        <attr name="contentEndDisableColor" format="color|reference" />
+    </declare-styleable>
+    <declare-styleable name="RotatingView">
+        <attr name="contentStartColor" />
+        <attr name="contentEndColor" />
+        <attr name="contentTextColor" format="color|reference" />
+        <attr name="indicatorImage" format="reference" />
+        <attr name="contentLineWidth" format="dimension" />
+        <attr name="backgroundLineWidth" format="dimension" />
+        <attr name="paddingWidth" format="dimension" />
+        <attr name="rTextSize" format="dimension" />
+    </declare-styleable>
+
+    <style name="TextStyle_18sp_white_ffffff">
+        <item name="android:textSize">@dimen/text_18sp</item>
+        <item name="android:textColor">@color/white_ffffff</item>
+    </style>
+    <!--    TextColor:black-->
+    <style name="TextStyle_14sp_black_242424">
+        <item name="android:textSize">@dimen/text_14sp</item>
+        <item name="android:textColor">@color/black_242424</item>
+    </style>
+
+    <style name="TextStyle_14sp_black_000000">
+        <item name="android:textSize">@dimen/text_14sp</item>
+        <item name="android:textColor">@color/black_000000</item>
+    </style>
+
+    <style name="TextStyle_16sp_black_242424">
+        <item name="android:textSize">@dimen/text_16sp</item>
+        <item name="android:textColor">@color/black_242424</item>
+    </style>
+
+    <style name="TextStyle_18sp_black_3C3B3B">
+        <item name="android:textSize">@dimen/text_18sp</item>
+        <item name="android:textColor">@color/black_3C3B3B</item>
+    </style>
+
+    <style name="TextStyle_18sp_black_242424">
+        <item name="android:textSize">@dimen/text_18sp</item>
+        <item name="android:textColor">@color/black_242424</item>
+    </style>
 
 </resources>

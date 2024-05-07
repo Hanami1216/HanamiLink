@@ -1,4 +1,4 @@
-package com.hanamilink;
+package com.hanamilink.activity;
 
 
 
@@ -11,6 +11,7 @@ import androidx.navigation.ui.NavigationUI;
 import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.hanamilink.R;
 import com.hanamilink.databinding.ActivityBottomNavigationBinding;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private ActivityBottomNavigationBinding binding;
+
 
 
     @Override

@@ -30,4 +30,42 @@
     <string name="title_home">主页</string>
     <string name="title_eq">均衡器</string>
     <string name="title_ble">蓝牙</string>
+
+
+    <!--EQ function-->
+    <string name="eq_normal">Normal</string>
+    <string name="eq_rock">Rock</string>
+    <string name="eq_pop">Pop</string>
+    <string name="eq_classical">Classical</string>
+    <string name="eq_jazz">Jazz</string>
+    <string name="eq_country">Country</string>
+    <string name="eq_user">Customize</string>
+    <string name="eq_advanced_setting">Advance setting</string>
+    <string name="eq_advanced_reverberation">Reverb</string>
+    <string name="eq_advanced_dynamic">DRC</string>
+    <string name="eq_advanced_depth">Depth</string>
+    <string name="eq_advanced_strength">Gain</string>
+    <string name="current_volume">Current volume:</string>
+
+    <string name="eq_freq_16k">16k</string>
+    <string name="eq_freq_8k">8k</string>
+    <string name="eq_freq_4k">4k</string>
+    <string name="eq_freq_2k">2k</string>
+    <string name="eq_freq_1k">1k</string>
+    <string name="eq_freq_500">500</string>
+    <string name="eq_freq_250">250</string>
+    <string name="eq_freq_125">125</string>
+    <string name="eq_freq_63">63</string>
+    <string name="eq_freq_31">31</string>
+    <string name="eq_freq_12db">+8dB</string>
+    <string name="eq_freq_0db">0dB</string>
+    <string name="eq_freq_negative_12db">-8dB</string>
+    <string name="music_time_default">00:00</string>
+    <string name="product_default_quantity">100%</string>
+
+    <string name="volume_bass">Bass</string>
+    <string name="volume_main">Main volume</string>
+    <string name="volume_height">Treble</string>
+    <string name="eq_reset">Reset</string>
+    <string name="eq_preset">Preset</string>
 </resources>
