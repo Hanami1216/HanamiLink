@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         // 创建用于配置顶部应用栏行为的 AppBarConfiguration 实例
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_ble_manager)
+                R.id.navigation_home, R.id.navigation_eq, R.id.navigation_ble_manager)
                 .build();
 
         // 获取与当前 activity 关联的导航控制器

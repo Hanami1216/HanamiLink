@@ -12,9 +12,9 @@
             tools:layout="@layout/fragment_home" />
 
     <fragment
-            android:id="@+id/navigation_dashboard"
+            android:id="@+id/navigation_eq"
             android:name="com.hanamilink.activity.ui.dashboard.DashboardFragment"
-            android:label="@string/title_dashboard"
+            android:label="@string/title_eq"
             tools:layout="@layout/fragment_dashboard" />
 
     <fragment
