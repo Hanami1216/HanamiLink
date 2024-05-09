@@ -1,4 +1,4 @@
-package com.hanamilink.activity.ui.widget;
+package com.hanamilink.ui.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -16,111 +16,138 @@ import android.view.View;
 import com.hanamilink.R;
 
 
-/**
- * TODO: document your custom view class.
- */
 public class VerticalSeekBarView extends View {
 
+    // 用于绘制文本内容的画笔
     private TextPaint mTextPaint;
     private TextPaint mLabelTextPaint;
 
-
+    // 用于绘制选中进度条的画笔和普通进度条的画笔
     private Paint mSelectedProgressPaint;
     private Paint mProgressPaint;
+
+    // 用于显示在控件上的文本内容
     private String mText = "125";
+
+    // 当前数值
     private int currentValue = 0;
+
+    // 用于记录上一个触摸点的位置
     private PointF mLastPoint = new PointF();
+
+    // 用于监听数值变化的监听器
     public ValueListener mValueListener;
+
+    // 用于监听悬停状态变化的监听器
     public HoverListener mHoverListener;
+
+    // 控件是否可用的标识变量
     private boolean enable = false;
 
-    private Bitmap thumbImage = BitmapFactory.decodeResource(getResources(),
-            R.drawable.ic_eq_btn_slider_nor);
-    private Bitmap thumbSelectedImage = BitmapFactory.decodeResource(getResources(),
-            R.drawable.ic_eq_btn_slider_sel);
 
-    private Bitmap labelImage = BitmapFactory.decodeResource(getResources(),
-            R.drawable.ic_eq_sb_labal_bg);
+    // 未选中状态下的滑块图像
+    private Bitmap thumbImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_eq_btn_slider_nor);
+
+    // 选中状态下的滑块图像
+    private Bitmap thumbSelectedImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_eq_btn_slider_sel);
+
+    // 标签的图像
+    private Bitmap labelImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_eq_sb_labal_bg);
 
 
+    // 控件是否处于活动状态
     private boolean mActive;
 
+    // 控件的索引值
     private int index = 0;
+
+    // 控件所能表示的最小值
     private int min = -8;
+
+    // 控件所能表示的最大值
     private int max = 8;
 
+
+    // 设置控件的索引值
     public void setIndex(int index) {
         this.index = index;
     }
 
+    // 构造函数，用于在代码中创建控件实例
     public VerticalSeekBarView(Context context) {
         super(context);
         init(null, 0);
     }
 
+    // 构造函数，用于在布局文件中使用控件时实例化控件
     public VerticalSeekBarView(Context context, AttributeSet attrs) {
         super(context, attrs);
         init(attrs, 0);
     }
 
+    // 构造函数，用于在布局文件中使用控件时实例化控件，且应用自定义样式
     public VerticalSeekBarView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(attrs, defStyle);
     }
 
+
     private void init(AttributeSet attrs, int defStyle) {
+        // 初始化文本画笔
         mTextPaint = new TextPaint();
         mTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mTextPaint.setTextAlign(Paint.Align.CENTER);
-        mTextPaint.setTextSize(sp2px(12));
-        mTextPaint.setColor(getContext().getResources().getColor(R.color.gray_8B8B8B));
+        mTextPaint.setTextSize(sp2px(12));  // 设置文本大小为 12sp
+        mTextPaint.setColor(getContext().getResources().getColor(R.color.gray_8B8B8B));  // 设置文本颜色为灰色
 
+        // 初始化标签文本画笔
         mLabelTextPaint = new TextPaint();
         mLabelTextPaint.setFlags(Paint.ANTI_ALIAS_FLAG);
         mLabelTextPaint.setTextAlign(Paint.Align.CENTER);
-        mLabelTextPaint.setTextSize(sp2px(14));
-        mLabelTextPaint.setColor(Color.WHITE);
+        mLabelTextPaint.setTextSize(sp2px(14));  // 设置文本大小为 14sp
+        mLabelTextPaint.setColor(Color.WHITE);  // 设置文本颜色为白色
 
+        // 初始化选中进度条的画笔
         mSelectedProgressPaint = new Paint();
-        mSelectedProgressPaint.setStrokeCap(Paint.Cap.ROUND);
-        mSelectedProgressPaint.setStrokeWidth(dp2px(3));
-        setEnable(true);
+        mSelectedProgressPaint.setStrokeCap(Paint.Cap.ROUND);  // 设置画笔结束端为圆形
+        mSelectedProgressPaint.setStrokeWidth(dp2px(3));  // 设置画笔宽度为 3dp
+        setEnable(true);  // 设置为可用状态
 
-
+        // 初始化普通进度条的画笔
         mProgressPaint = new Paint();
-        mProgressPaint.setStrokeCap(Paint.Cap.ROUND);
-        mProgressPaint.setStrokeWidth(dp2px(3));
-        mProgressPaint.setColor(getContext().getResources().getColor(R.color.gray_E5E5E5));
+        mProgressPaint.setStrokeCap(Paint.Cap.ROUND);  // 设置画笔结束端为圆形
+        mProgressPaint.setStrokeWidth(dp2px(3));  // 设置画笔宽度为 3dp
+        mProgressPaint.setColor(getContext().getResources().getColor(R.color.gray_E5E5E5));  // 设置普通进度条的颜色为浅灰色
     }
+
 
 
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-//        canvas.drawColor(Color.BLUE);
-        float currentProgressY = mLastPoint.y;
-        float x = getWidth() / 2f;
-        Bitmap bitmap = isActive() ? thumbSelectedImage : thumbImage;
-        canvas.drawLine(x, getProgressStartY(), x, getProgressEndY(), mProgressPaint);
-        //处理部分手机startY和endY相同时起点无效并自动默认为原点（0,0）的问题，目前发现三星SM-G9200有此问题
+        float currentProgressY = mLastPoint.y;  // 获取当前进度的垂直位置
+        float x = getWidth() / 2f;  // 获取控件中心的水平位置
+        Bitmap bitmap = isActive() ? thumbSelectedImage : thumbImage;  // 根据控件是否处于活动状态选择不同的滑块图像
+        canvas.drawLine(x, getProgressStartY(), x, getProgressEndY(), mProgressPaint);  // 绘制普通的进度条线
+        // 处理部分手机startY和endY相同时起点无效并自动默认为原点（0,0）的问题
         if (currentProgressY != getProgressEndY()) {
-            canvas.drawLine(x, currentProgressY, x, getProgressEndY(), mSelectedProgressPaint);
+            canvas.drawLine(x, currentProgressY, x, getProgressEndY(), mSelectedProgressPaint);  // 绘制选中的进度条线
         }
-        float thumbY = currentProgressY - bitmap.getHeight() / 2f;
-        float thumbX = (getWidth() - bitmap.getWidth()) / 2f;
-        canvas.drawBitmap(bitmap, thumbX, thumbY, null);
-        canvas.drawText(mText, x, getHeight() - sp2px(2), mTextPaint);
-//        JL_Log.e("sen","currentProgressY="+currentProgressY+"\tvalue="+currentValue+"\thash="+hashCode());
+        float thumbY = currentProgressY - bitmap.getHeight() / 2f;  // 计算滑块的垂直位置
+        float thumbX = (getWidth() - bitmap.getWidth()) / 2f;  // 计算滑块的水平位置
+        canvas.drawBitmap(bitmap, thumbX, thumbY, null);  // 绘制滑块图像
+        canvas.drawText(mText, x, getHeight() - sp2px(2), mTextPaint);  // 绘制文本内容
+        // 如果控件处于活动状态
         if (isActive()) {
             x = (getWidth() - labelImage.getWidth()) / 2f;
             float y = thumbY - labelImage.getHeight() + bitmap.getHeight() / 4f;
-            canvas.drawBitmap(labelImage, x, y, null);
+            canvas.drawBitmap(labelImage, x, y, null);  // 绘制标签的图像
             x = getWidth() / 2f;
             y = y + labelImage.getHeight() / 1.65f;
-            canvas.drawText(currentValue + "", x, y, mLabelTextPaint);
+            canvas.drawText(currentValue + "", x, y, mLabelTextPaint);  // 绘制当前数值
         }
-
     }
+
 
 
     public void setText(String text) {

@@ -1,4 +1,4 @@
-package com.hanamilink.activity.ui.dashboard;
+package com.hanamilink.ui.dashboard;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

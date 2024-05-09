@@ -1,4 +1,4 @@
-package com.hanamilink.activity.ui.widget.eq;
+package com.hanamilink.ui.widget.eq;
 
 
 import androidx.annotation.Keep;

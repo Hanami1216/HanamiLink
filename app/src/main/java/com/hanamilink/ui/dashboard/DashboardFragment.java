@@ -1,16 +1,14 @@
-package com.hanamilink.activity.ui.dashboard;
+package com.hanamilink.ui.dashboard;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.hanamilink.databinding.FragmentDashboardBinding;
 import com.hanamilink.databinding.FragmentEqBinding;
 
 public class DashboardFragment extends Fragment {
@@ -22,6 +20,7 @@ public class DashboardFragment extends Fragment {
         DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
         binding = FragmentEqBinding.inflate(inflater, container, false);
+
         View root = binding.getRoot();
 
 

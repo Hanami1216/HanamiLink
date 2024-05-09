@@ -1,4 +1,4 @@
-package com.hanamilink.activity.ui.widget.eq;
+package com.hanamilink.ui.widget.eq;
 
 public class EqCovertUtil {
     int w, h; // 定义 w 和 h 两个整型变量，用来表示宽度和高度

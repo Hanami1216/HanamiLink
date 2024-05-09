@@ -5,7 +5,7 @@
     android:layout_width="46dp"
     android:layout_height="wrap_content">
 
-    <com.hanamilink.activity.ui.widget.VerticalSeekBarView
+    <com.hanamilink.ui.widget.VerticalSeekBarView
         android:id="@+id/vsb_eq"
         android:layout_width="46dp"
         app:layout_constraintEnd_toEndOf="parent"

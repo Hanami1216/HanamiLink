@@ -15,7 +15,7 @@
         android:paddingTop="8dp"
         android:background="@drawable/bg_eq_shape">
 
-        <com.hanamilink.activity.ui.widget.RotatingView
+        <com.hanamilink.ui.widget.RotatingView
             android:id="@+id/rotat_bass"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -33,7 +33,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.hanamilink.activity.ui.widget.RotatingView
+        <com.hanamilink.ui.widget.RotatingView
             android:id="@+id/rotat_main"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -49,7 +49,7 @@
             app:layout_constraintStart_toEndOf="@id/rotat_bass"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.hanamilink.activity.ui.widget.RotatingView
+        <com.hanamilink.ui.widget.RotatingView
             android:id="@+id/rotat_height"
             android:layout_width="0dp"
             android:layout_height="0dp"
@@ -176,7 +176,7 @@
         <!--    />-->
 
 
-        <com.hanamilink.activity.ui.widget.ViewPager2RecycleView
+        <com.hanamilink.ui.widget.ViewPager2RecycleView
             android:id="@+id/rv_vsbs"
             android:layout_width="0dp"
             android:layout_height="0dp"

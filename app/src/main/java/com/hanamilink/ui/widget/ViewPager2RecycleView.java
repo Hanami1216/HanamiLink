@@ -1,4 +1,4 @@
-package com.hanamilink.activity.ui.widget;
+package com.hanamilink.ui.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

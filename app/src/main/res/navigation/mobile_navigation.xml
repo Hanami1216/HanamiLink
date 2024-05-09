@@ -7,19 +7,19 @@
 
     <fragment
             android:id="@+id/navigation_home"
-            android:name="com.hanamilink.activity.ui.home.HomeFragment"
+            android:name="com.hanamilink.ui.home.HomeFragment"
             android:label="@string/title_home"
             tools:layout="@layout/fragment_home" />
 
     <fragment
             android:id="@+id/navigation_eq"
-            android:name="com.hanamilink.activity.ui.dashboard.DashboardFragment"
+            android:name="com.hanamilink.ui.dashboard.DashboardFragment"
             android:label="@string/title_eq"
             tools:layout="@layout/fragment_dashboard" />
 
     <fragment
             android:id="@+id/navigation_ble_manager"
-            android:name="com.hanamilink.activity.ui.ble.BleManagerFragment"
+            android:name="com.hanamilink.ui.ble.BleManagerFragment"
             android:label="@string/title_ble"
             tools:layout="@layout/fragment_ble_manager" />
 </navigation>

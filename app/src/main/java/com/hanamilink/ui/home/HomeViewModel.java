@@ -1,16 +1,16 @@
-package com.hanamilink.activity.ui.ble;
+package com.hanamilink.ui.home;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class BleManagerViewModel extends ViewModel {
+public class HomeViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public BleManagerViewModel() {
+    public HomeViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is ble fragment");
+        mText.setValue("This is home fragment");
     }
 
     public LiveData<String> getText() {

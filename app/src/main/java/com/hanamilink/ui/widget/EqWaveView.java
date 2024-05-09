@@ -1,4 +1,4 @@
-package com.hanamilink.activity.ui.widget;
+package com.hanamilink.ui.widget;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -15,10 +15,10 @@ import android.util.TypedValue;
 import android.view.View;
 
 import com.hanamilink.R;
-import com.hanamilink.activity.ui.widget.eq.AppUtil;
-import com.hanamilink.activity.ui.widget.eq.EQPlotCore;
-import com.hanamilink.activity.ui.widget.eq.EqCovertUtil;
-import com.hanamilink.activity.ui.widget.eq.ValueUtil;
+import com.hanamilink.ui.widget.eq.AppUtil;
+import com.hanamilink.ui.widget.eq.EQPlotCore;
+import com.hanamilink.ui.widget.eq.EqCovertUtil;
+import com.hanamilink.ui.widget.eq.ValueUtil;
 
 
 public class EqWaveView extends View {
