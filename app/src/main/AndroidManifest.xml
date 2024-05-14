@@ -23,10 +23,10 @@
             android:theme="@style/Theme.HanamiLink"
             tools:targetApi="31">
         <activity
-                android:name=".activity.BleManagerActivity"
+                android:name=".ui.activity.BleManagerActivity"
                 android:exported="false" />
         <activity
-                android:name=".activity.MainActivity"
+                android:name=".ui.activity.MainActivity"
                 android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

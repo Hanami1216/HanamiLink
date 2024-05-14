@@ -1,4 +1,4 @@
-package com.hanamilink.bluetooth.adapter;
+package com.hanamilink.data.adapter;
 
 import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothClass;

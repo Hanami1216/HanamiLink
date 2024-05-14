@@ -1,4 +1,4 @@
-package com.hanamilink.activity;
+package com.hanamilink.ui.activity;
 
 
 

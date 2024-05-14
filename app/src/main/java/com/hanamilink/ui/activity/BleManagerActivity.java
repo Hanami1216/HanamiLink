@@ -1,4 +1,4 @@
-package com.hanamilink.activity;
+package com.hanamilink.ui.activity;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,8 +11,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 import android.view.View;
@@ -20,18 +18,15 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.chad.library.adapter.base.BaseQuickAdapter;
-import com.chad.library.adapter.base.listener.OnItemClickListener;
 import com.hanamiLink.ble.BLEDeviceManager;
 import com.hanamiLink.ble.BleDevice;
 import com.hanamiLink.eventbus.BleEventType;
-import com.hanamiLink.eventbus.BleEventUtils;
 import com.hanamiLink.utils.PermissionUtils;
 import com.hanamiLink.utils.StatusBarUtil;
 import com.hanamiLink.utils.ToastUtil;
 import com.hanamilink.R;
-import com.hanamilink.ble.BleManagerAdapter;
-import com.hanamilink.bluetooth.adapter.DeviceAdapter;
+import com.hanamilink.data.adapter.BleManagerAdapter;
+import com.hanamilink.data.adapter.DeviceAdapter;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;

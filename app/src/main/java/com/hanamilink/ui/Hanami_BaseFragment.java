@@ -11,21 +11,24 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 public class Hanami_BaseFragment extends Fragment {
+    // 声明一个基础Fragment类
     protected String TAG = this.getClass().getSimpleName();
     private Bundle bundle;
     private OnFragmentLifeCircle mOnFragmentLifeCircle;
 
+    // 基础Fragment类的构造函数
     public Hanami_BaseFragment() {
     }
 
+    // 当视图创建时调用，初始化Fragment的一些操作
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         if (this.mOnFragmentLifeCircle != null) {
             this.mOnFragmentLifeCircle.onActivityCreated(this, this.getActivity());
         }
-
     }
 
+    // 当视图销毁时调用，执行一些清理操作
     public void onDestroyView() {
         if (this.mOnFragmentLifeCircle != null) {
             this.mOnFragmentLifeCircle.onDestroyView(this, this.getActivity());
@@ -34,6 +37,7 @@ public class Hanami_BaseFragment extends Fragment {
         super.onDestroyView();
     }
 
+    // 当Fragment显示状态发生改变时调用
     public void onHiddenChanged(boolean hidden) {
         super.onHiddenChanged(hidden);
         if (this.mOnFragmentLifeCircle != null) {
@@ -43,20 +47,23 @@ public class Hanami_BaseFragment extends Fragment {
                 this.mOnFragmentLifeCircle.onShow(this, this.getActivity());
             }
         }
-
     }
 
+    // 设置Fragment生命周期回调接口
     public void setOnFragmentLifeCircle(OnFragmentLifeCircle lifeCircle) {
         this.mOnFragmentLifeCircle = lifeCircle;
     }
 
+    // 获取bundle数据
     public Bundle getBundle() {
         return this.bundle;
     }
 
+    // 设置bundle数据
     public void setBundle(Bundle bundle) {
         this.bundle = bundle;
     }
+
 
     /**
      * 在给定的容器中切换 Fragment

@@ -1,34 +1,27 @@
 package com.hanamilink.ui.ble;
 
 import android.Manifest;
-import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.hanamiLink.ble.BLEDeviceManager;
 import com.hanamiLink.ble.BleDevice;
 import com.hanamiLink.utils.PermissionUtils;
 import com.hanamiLink.utils.ToastUtil;
 import com.hanamilink.R;
-import com.hanamilink.activity.BleManagerActivity;
-import com.hanamilink.activity.MainActivity;
-import com.hanamilink.ble.BleManagerAdapter;
-import com.hanamilink.bluetooth.adapter.DeviceAdapter;
+import com.hanamilink.data.adapter.BleManagerAdapter;
+import com.hanamilink.data.adapter.DeviceAdapter;
 import com.hanamilink.databinding.FragmentBleManagerBinding;
 
 import java.util.ArrayList;

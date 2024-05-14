@@ -1,4 +1,4 @@
-package com.hanamilink.ble;
+package com.hanamilink.data.cmd;
 
 import java.util.Arrays;
 
