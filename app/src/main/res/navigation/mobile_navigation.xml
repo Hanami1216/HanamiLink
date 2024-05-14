@@ -15,7 +15,7 @@
             android:id="@+id/navigation_eq"
             android:name="com.hanamilink.ui.dashboard.DashboardFragment"
             android:label="@string/title_eq"
-            tools:layout="@layout/fragment_dashboard" />
+            tools:layout="@layout/fragment_eq" />
 
     <fragment
             android:id="@+id/navigation_ble_manager"

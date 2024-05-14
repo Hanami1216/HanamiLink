@@ -12,6 +12,7 @@ import android.os.Bundle;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.hanamiLink.utils.StatusBarUtil;
 import com.hanamilink.R;
 import com.hanamilink.databinding.ActivityMainBinding;
 
@@ -26,6 +27,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        StatusBarUtil.StatusBarLightMode(this);//状态栏黑色字体
+
 
         // 使用 Data Binding 绑定底部导航栏相关的视图
         binding = ActivityMainBinding.inflate(getLayoutInflater());
