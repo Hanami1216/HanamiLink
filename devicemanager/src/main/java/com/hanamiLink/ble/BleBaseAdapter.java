@@ -16,7 +16,7 @@ public abstract class BleBaseAdapter {
 
     /**
      * 当蓝牙状态改变时调用此方法
-     * @param var1 蓝牙是否可用的标志位
+     * @param isEnable 蓝牙是否可用的标志位
      */
     public abstract void managerIsBluetoothEnable(boolean isEnable);
 
@@ -139,8 +139,8 @@ public abstract class BleBaseAdapter {
 
     /**
      * 接收设备数据时调用此方法
-     * @param var1 接收数据的设备对象
-     * @param var2 接收到的数据
+     * @param device 接收数据的设备对象
+     * @param data 接收到的数据
      */
     public abstract void deviceReceiveDatawithDevice(BleDevice device, byte[] data);
 }

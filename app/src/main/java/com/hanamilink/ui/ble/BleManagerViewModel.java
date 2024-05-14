@@ -1,19 +1,17 @@
 package com.hanamilink.ui.ble;
 
+import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
+import androidx.recyclerview.widget.RecyclerView;
 
-public class BleManagerViewModel extends ViewModel {
+public class BleManagerViewModel extends RecyclerView.ViewHolder {
 
-    private final MutableLiveData<String> mText;
 
-    public BleManagerViewModel() {
-        mText = new MutableLiveData<>();
-        mText.setValue("This is ble fragment");
-    }
-
-    public LiveData<String> getText() {
-        return mText;
+    public BleManagerViewModel(@NonNull View itemView) {
+        super(itemView);
     }
 }

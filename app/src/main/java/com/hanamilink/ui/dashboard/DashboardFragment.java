@@ -28,7 +28,7 @@ public class DashboardFragment extends Fragment {
     private static final boolean SEND_CMD_REALTIME = false;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        //DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
         // 假设有一个名为 dataList 的 List<EqSeekBarBean> 数据列表
         binding =  FragmentEqBinding.inflate(inflater, container, false);
         mEqSeekBarAdapter = new EqSeekBarAdapter(getEqSeekBarData(), (index, eqInfo, end) -> {

@@ -3,6 +3,7 @@ package com.hanamilink.ui.ble;
 import android.Manifest;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,12 +18,17 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.hanamiLink.ble.BLEDeviceManager;
 import com.hanamiLink.ble.BleDevice;
+import com.hanamiLink.eventbus.BleEventType;
 import com.hanamiLink.utils.PermissionUtils;
 import com.hanamiLink.utils.ToastUtil;
 import com.hanamilink.R;
 import com.hanamilink.data.adapter.BleManagerAdapter;
 import com.hanamilink.data.adapter.DeviceAdapter;
 import com.hanamilink.databinding.FragmentBleManagerBinding;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +48,6 @@ public class BleManagerFragment extends Fragment implements EasyPermissions.Perm
     DeviceAdapter mAdapter;//蓝牙设备适配器
     List<BleDevice> deviceList;//蓝牙数据
 
-    private BleManagerViewModel mBleManagerViewModel;
     /**
      * 在Fragment中创建并返回视图的方法。
      *
@@ -53,16 +58,29 @@ public class BleManagerFragment extends Fragment implements EasyPermissions.Perm
      */
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        // 创建 BleManagerViewModel 实例来处理 BLE 设备通信逻辑
-        BleManagerViewModel bleManagerViewModel =
-                new ViewModelProvider(this).get(BleManagerViewModel.class);
+
         // 使用 Data Binding 将 Fragment 的布局文件与视图关联起来
         binding = FragmentBleManagerBinding.inflate(inflater, container, false);
-
-        mBleManagerViewModel = new ViewModelProvider(this).get(BleManagerViewModel.class);
+        initBLE();
         initView();
         // 返回根视图作为 Fragment 的视图
         return binding.getRoot();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().register(this);
+        }
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (!EventBus.getDefault().isRegistered(this)) {
+            EventBus.getDefault().unregister(this);
+        }
     }
 
 
@@ -71,11 +89,9 @@ public class BleManagerFragment extends Fragment implements EasyPermissions.Perm
      */
     private void initView() {
 
-        binding.scanDevices.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ToastUtil.toast(requireContext(),"点击");
-            }
+        binding.scanDevices.setOnClickListener(v -> {
+            ToastUtil.toast(getContext(),"点击");
+            BLEDeviceManager.getInstance().startBLEScan();
         });
         // 蓝牙设备列表
         deviceList =  BLEDeviceManager.getInstance().getAllUsedDevices();
@@ -118,6 +134,13 @@ public class BleManagerFragment extends Fragment implements EasyPermissions.Perm
             });
         }
         mAdapter.setList(deviceList);
+    }
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onEventMainThread(Message msg) {
+        if (msg.what == BleEventType.BLE_SCAN_ING.toNumber()) {
+            // 执行蓝牙扫描开始后的操作
+            showDevicesData();
+        }
     }
 
     /**
@@ -206,6 +229,7 @@ public class BleManagerFragment extends Fragment implements EasyPermissions.Perm
      */
     @Override
     public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        ToastUtil.toast(getContext(), this.getResources().getString(R.string.tip_Permission_Granted));
         initBLE();
     }
 
@@ -215,8 +239,10 @@ public class BleManagerFragment extends Fragment implements EasyPermissions.Perm
      */
     @Override
     public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        ToastUtil.toast(getContext(), this.getResources().getString(R.string.tip_Permission_Denied));
         if (EasyPermissions.somePermissionPermanentlyDenied(this, perms)) {
             new AppSettingsDialog.Builder(this).build().show();
         }
     }
+
 }

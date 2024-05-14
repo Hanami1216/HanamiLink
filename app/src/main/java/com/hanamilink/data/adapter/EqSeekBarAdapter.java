@@ -27,14 +27,12 @@ public final class EqSeekBarAdapter extends BaseQuickAdapter<EqSeekBarBean, Base
     private ValueChange mValueChange;
     private boolean mHasHoverView = false;
     private EqInfo mEqInfo = new EqInfo();
-
     private boolean ban;
 
 
-    @SuppressLint("NotifyDataSetChanged")
     public void setBan(boolean ban) {
         this.ban = ban;
-        notifyDataSetChanged();
+        notifyItemRangeChanged(0, getItemCount());  // 刷新所有条目而不是整个数据集(提高性能)
     }
 
     public EqSeekBarAdapter(List<EqSeekBarBean> list, ValueChange valueChange) {
@@ -49,43 +47,42 @@ public final class EqSeekBarAdapter extends BaseQuickAdapter<EqSeekBarBean, Base
             int itemWidth = 0;
             ViewGroup relativeLayout = (ViewGroup) helper.getView(R.id.cl_main);
             ViewGroup.LayoutParams params = relativeLayout.getLayoutParams();
-            //小于7段
+
             if (getData().size() < 7) {
                 if (getRecyclerView().getWidth() != 0) {
-                    itemWidth = getRecyclerView().getWidth() / getData().size();  // 根据RecyclerView宽度计算每个条目的宽度
+                    itemWidth = getRecyclerView().getWidth() / getData().size();
                 } else {
-                    itemWidth = (AppUtil.getScreenWidth(getContext()) - ValueUtil.dp2px(getContext(), 60)) / getData().size();  // 使用屏幕宽度减去固定像素和根据数量计算每个条目的宽度
+                    itemWidth = (AppUtil.getScreenWidth(getContext()) - ValueUtil.dp2px(getContext(), 60)) / getData().size();
                 }
             } else {
-                //超过6段
-                params.width = ValueUtil.dp2px(getContext(), 50);  // 如果大于等于7段，设置布局参数的宽度为50dp
+                params.width = ValueUtil.dp2px(getContext(), 50);
             }
-            //如果计算到的宽度是0，则忽略
+
             if (itemWidth != 0) {
-                params.width = itemWidth;  // 设置布局参数的宽度为计算得到的宽度
-                relativeLayout.setLayoutParams(params);  // 将计算得到的布局参数设置给RelativeLayout
+                params.width = itemWidth;
+                relativeLayout.setLayoutParams(params);
             }
         }
-        VerticalSeekBarView verticalSeekBarView = helper.getView(R.id.vsb_eq);
-        verticalSeekBarView.setText(item.getFreq());  // 设置垂直SeekBar对应位置的频率文本
-        verticalSeekBarView.setValue(item.getValue());  // 设置垂直SeekBar对应位置的值
-        verticalSeekBarView.setIndex(item.getIndex());  // 设置垂直SeekBar的索引
-        verticalSeekBarView.setEnable(!ban);  // 设置垂直SeekBar是否可用
-        this.mEqInfo.getValue()[item.getIndex()] = (byte) item.getValue();  // 更新mEqInfo中对应位置的值
 
-        // 设置垂直SeekBar数值变化监听器
+        VerticalSeekBarView verticalSeekBarView = helper.getView(R.id.vsb_eq);
+        verticalSeekBarView.setText(item.getFreq());
+        verticalSeekBarView.setValue(item.getValue());
+        verticalSeekBarView.setIndex(item.getIndex());
+        verticalSeekBarView.setEnable(!ban);
+        this.mEqInfo.getValue()[item.getIndex()] = (byte) item.getValue();
+
         verticalSeekBarView.setValueListener((value, end) -> {
             if (getItemPosition(item) < 0) {
-                return;  // 如果当前条目不在适配器中的位置小于0，则返回
+                return;
             }
-            item.setValue(value);  // 更新条目对应的值
-            this.mEqInfo.getValue()[item.getIndex()] = (byte) item.getValue();  // 更新mEqInfo中对应位置的值
-            mValueChange.onChange(item.getIndex(), this.mEqInfo, end);  // 调用值变化回调接口
+            item.setValue(value);
+            this.mEqInfo.getValue()[item.getIndex()] = (byte) item.getValue();
+            mValueChange.onChange(item.getIndex(), this.mEqInfo, end);
         });
 
-        // 设置垂直SeekBar悬停监听器
         verticalSeekBarView.setHoverListener(hover -> mHasHoverView = hover);
     }
+
 
     @SuppressLint("NotifyDataSetChanged")
     public void select(int selectMode) {
@@ -96,6 +93,8 @@ public final class EqSeekBarAdapter extends BaseQuickAdapter<EqSeekBarBean, Base
     public boolean hasHoverView() {
         return mHasHoverView;
     }
+
+
 
     public void updateSeekBar(EqInfo eqInfo) {
         this.mEqInfo = eqInfo;
@@ -108,14 +107,11 @@ public final class EqSeekBarAdapter extends BaseQuickAdapter<EqSeekBarBean, Base
     }
 
 
-    @SuppressLint("NotifyDataSetChanged")
     public void updateSeekBar(int[] value) {
-        //有拖动时不更新
         if (mHasHoverView) {
             return;
         }
         List<EqSeekBarBean> list = getData();
-        //先检测是否有数据变化，有变化才更新。没有就不更新，防止recycleView view缓存导致的抖动问题
         int changeCount = 0;
         int changeIndex = -1;
         for (int i = 0; i < list.size() && i < value.length; i++) {
@@ -135,13 +131,13 @@ public final class EqSeekBarAdapter extends BaseQuickAdapter<EqSeekBarBean, Base
 
     @SuppressLint("NotifyDataSetChanged")
     public void reset() {
-        //List<EqSeekBarBean> list = getData();
-        ////先检测是否有数据变化，有变化才更新。没有就不更新，防止recycleView view缓存导致的抖动问题
-        //for (EqSeekBarBean barBean : list) {
-        //    barBean.setValue(0);
-        //}
-        //notifyDataSetChanged();
+        List<EqSeekBarBean> list = getData();
+        for (EqSeekBarBean barBean : list) {
+            barBean.setValue(0);
+        }
+        notifyDataSetChanged();
     }
+
 
     public int[] getValues() {
         int[] values = new int[getData().size()];
@@ -152,10 +148,10 @@ public final class EqSeekBarAdapter extends BaseQuickAdapter<EqSeekBarBean, Base
     }
 
 
+
     public interface ValueChange {
         void onChange(int index, EqInfo eqInfo, boolean end);
     }
-
 
     public static int getScreenWidth(Context context) {
         WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
