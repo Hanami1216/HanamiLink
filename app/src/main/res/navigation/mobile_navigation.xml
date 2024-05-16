@@ -7,9 +7,9 @@
 
     <fragment
             android:id="@+id/navigation_home"
-            android:name="com.hanamilink.ui.eq.EqFragment"
+            android:name="com.hanamilink.ui.testFragment"
             android:label="@string/title_home"
-            tools:layout="@layout/fragment_eq" />
+            tools:layout="@layout/fragment_test" />
 
     <fragment
             android:id="@+id/navigation_eq"

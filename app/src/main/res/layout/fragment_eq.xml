@@ -177,23 +177,23 @@
 
 
         <com.hanamilink.ui.widget.ViewPager2RecycleView
-            android:id="@+id/rv_vsbs"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="6dp"
-            android:layout_marginBottom="12dp"
-            android:overScrollMode="never"
-            android:scrollbars="none"
+                android:id="@+id/rv_vsbs"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="6dp"
+                android:layout_marginBottom="12dp"
+                android:overScrollMode="never"
+                android:scrollbars="none"
+                app:layout_constraintBottom_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
 
-            app:layout_constraintEnd_toEndOf="parent"
-
-            app:layout_constraintHorizontal_chainStyle="spread"
-            app:layout_constraintStart_toEndOf="@id/tv_gain_12"
-            app:layout_constraintTop_toBottomOf="@id/tv_main_volume"
-            tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-            tools:layout_height="320dp"
-            tools:listitem="@layout/item_eq_seekbar"
-            tools:spanCount="10" />
+                app:layout_constraintHorizontal_chainStyle="spread"
+                app:layout_constraintStart_toEndOf="@id/tv_gain_12"
+                app:layout_constraintTop_toBottomOf="@id/tv_main_volume"
+                tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                tools:layout_height="320dp"
+                tools:listitem="@layout/item_eq_seekbar"
+                tools:spanCount="10" />
 
 
         <TextView

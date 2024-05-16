@@ -163,6 +163,14 @@ public class EqFragment extends Hanami_BaseFragment implements RotatingView.OnVa
 
     @Override
     public void change(RotatingView view, int value, boolean end) {
-
+        if (view == rotatMain) {
+            if (getContext() != null) {
+                //setVolumeByRotate(value);
+            }
+        } else if (view == rotatBass || view == rotatHigh) {
+            if (end || SEND_CMD_REALTIME) {
+                //mRCSPController.setHighAndBassValue(mRCSPController.getUsingDevice(), rotatHigh.getValue(), rotatBass.getValue(), null);
+            }
+        }
     }
 }

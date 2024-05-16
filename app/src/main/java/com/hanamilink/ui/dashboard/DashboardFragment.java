@@ -1,6 +1,7 @@
 package com.hanamilink.ui.dashboard;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,28 +16,50 @@ import com.hanamilink.data.adapter.EqSeekBarAdapter;
 import com.hanamilink.data.model.EqInfo;
 import com.hanamilink.data.model.EqSeekBarBean;
 import com.hanamilink.databinding.FragmentEqBinding;
+import com.hanamilink.ui.Hanami_BaseFragment;
+import com.hanamilink.ui.widget.RotatingView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Hanami_BaseFragment implements RotatingView.OnValueChangeListener {
+
+
 
     private FragmentEqBinding binding;
 
     private EqSeekBarAdapter mEqSeekBarAdapter;
 
+    private EqInfo mEqInfo;
+
     private static final boolean SEND_CMD_REALTIME = false;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
+
+        //binding.rotatMain.setOnValueChangeListener(this);
+        //binding.rotatBass.setOnValueChangeListener(this);
+        //binding.rotatHeight.setOnValueChangeListener(this);
+
+        //binding.btnEqMode.setOnClickListener(mOnClickListener);
+        //binding.btnEqReset.setOnClickListener(mOnClickListener);
+        //binding.btnEqAdvancedSetting.setOnClickListener(mOnClickListener);
+
         //DashboardViewModel dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
         // 假设有一个名为 dataList 的 List<EqSeekBarBean> 数据列表
         binding =  FragmentEqBinding.inflate(inflater, container, false);
-        mEqSeekBarAdapter = new EqSeekBarAdapter(getEqSeekBarData(), (index, eqInfo, end) -> {
+        mEqSeekBarAdapter = new EqSeekBarAdapter(new ArrayList<>(), (index, eqInfo, end) -> {
 
         });
         binding.rvVsbs.setAdapter(mEqSeekBarAdapter);
-        binding.rvVsbs.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+        binding.rvVsbs.setLayoutManager(new LinearLayoutManager(getContext()));
+        mEqInfo = new EqInfo(0, new byte[10]);
+        mEqInfo.setFreqs(new int[]{31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000});
+        mEqInfo.setValue(new byte[]{0,0,0,0,0,0,0,0,0,0});
+
+        mEqSeekBarAdapter.updateSeekBar(mEqInfo);
+        Log.d(TAG, "onCreateView: 创建eqinfo");
         return binding.getRoot();
+
     }
     // 创建均衡器数据列表
     private List<EqSeekBarBean> getEqSeekBarData() {
@@ -51,6 +74,61 @@ public class DashboardFragment extends Fragment {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        binding = null;
+    }
+
+    @Override
+    public void change(RotatingView view, int value, boolean end) {
+
+    }
+    /**
+     * @param null:
+     * @return null
+     * @description 三个按钮的点击事件
+     */
+    private final View.OnClickListener mOnClickListener = v -> {
+        //if (v == btnEqMode) {
+        //    EqModeDialog eqModeDialog = EqModeDialog.newInstance(eqInfo -> setEqInfo(eqInfo));
+        //    eqModeDialog.show(getChildFragmentManager(), EqModeDialog.class.getCanonicalName());
+        //} else if (v == btnEqReset) {
+        //    List<EqInfo> list = EqCacheUtil.getPresetEqInfo().getEqInfos();
+        //    EqInfo eqInfo = list.get(0).copy();
+        //    eqInfo.setMode(6);
+        //    eqInfo.setValue(new byte[eqInfo.getValue().length]);
+        //    setEqInfo(eqInfo);
+        //} else if (v == btnEqAdvancedSet) {
+        //    if (!mRCSPController.isDeviceConnected()) {
+        //        ToastUtil.showToastShort(getString(R.string.first_connect_device));
+        //        return;
+        //    }
+        //    CommonActivity.startCommonActivity(getActivity(), EqAdvancedSetFragment.class.getCanonicalName());
+        //}
+    };
+
+    private void updateEqInfo(@NonNull EqInfo eqInfo) {
+        Log.d(TAG, "set updateEqInfo -->" + eqInfo.toString());
+        this.mEqInfo = eqInfo;
+        // 频响曲线 模式设定
+        //tvEqModeSelectName.setText(getResources().getStringArray(R.array.eq_mode_list)[mEqInfo.getMode()]);
+        // 频响曲线数据设置
+        //wvFreq.setData(ValueUtil.bytes2ints(eqInfo.getValue(), eqInfo.getValue().length));
+        //wvFreq.setFreqs(eqInfo.getFreqs());
+        mEqSeekBarAdapter.updateSeekBar(eqInfo.copy());
+
+        //boolean isBan = mRCSPController.getDeviceInfo() != null && mRCSPController.getDeviceInfo().isBanEq();
+
+        //boolean enableResetBtn = mEqInfo.getMode() == 6 && !isBan;
+        //判断是否全部值都是0，如果是则禁止点击
+        //if (enableResetBtn) {
+        //    boolean allZero = true;
+        //    for (int v : eqInfo.getValue()) {
+        //        if (v != 0) {
+        //            allZero = false;
+        //            break;
+        //        }
+        //    }
+        //    enableResetBtn = !allZero;
+        //}
+        //btnEqReset.setSelected(enableResetBtn);
+        //btnEqReset.setClickable(enableResetBtn);
     }
 }
