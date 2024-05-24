@@ -75,11 +75,11 @@ public class EqFragment extends Hanami_BaseFragment implements RotatingView.OnVa
         mEqSeekBarAdapter = new EqSeekBarAdapter(new ArrayList<>(), (index, eqInfo, end) -> {
             if (end || SEND_CMD_REALTIME) {
                 eqInfo.setMode(6);
-
             }
         });
         rvVsbs.setAdapter(mEqSeekBarAdapter);
         rvVsbs.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
+
 
         return view;
     }

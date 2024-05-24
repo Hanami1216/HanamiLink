@@ -51,7 +51,7 @@ public class DashboardFragment extends Hanami_BaseFragment implements RotatingVi
 
         });
         binding.rvVsbs.setAdapter(mEqSeekBarAdapter);
-        binding.rvVsbs.setLayoutManager(new LinearLayoutManager(getContext()));
+        binding.rvVsbs.setLayoutManager(new LinearLayoutManager(getContext(), RecyclerView.HORIZONTAL, false));
         mEqInfo = new EqInfo(0, new byte[10]);
         mEqInfo.setFreqs(new int[]{31, 63, 125, 250, 500, 1000, 2000, 4000, 8000, 16000});
         mEqInfo.setValue(new byte[]{0,0,0,0,0,0,0,0,0,0});
@@ -61,16 +61,7 @@ public class DashboardFragment extends Hanami_BaseFragment implements RotatingVi
         return binding.getRoot();
 
     }
-    // 创建均衡器数据列表
-    private List<EqSeekBarBean> getEqSeekBarData() {
-        List<EqSeekBarBean> dataList = new ArrayList<>();
-        // 这里可以根据需要添加均衡器数据
-        for (int i = 0; i < 10; i++) { // 示例添加10个均衡器条目
-            EqSeekBarBean item = new EqSeekBarBean(i, "Freq" + i, 0); // 设置频率和初始数值
-            dataList.add(item);
-        }
-        return dataList;
-    }
+
     @Override
     public void onDestroyView() {
         super.onDestroyView();
