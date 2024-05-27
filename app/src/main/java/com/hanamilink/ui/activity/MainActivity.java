@@ -36,13 +36,8 @@ public class MainActivity extends AppCompatActivity {
         // 将布局文件中的根视图设置为当前 activity 的内容视图
         setContentView(binding.getRoot());
 
-        // 创建用于配置顶部应用栏行为的 AppBarConfiguration 实例
-        AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_home, R.id.navigation_eq, R.id.navigation_ble_manager)
-                .build();
         // 获取NavController
         NavController navController = Navigation.findNavController(this, R.id.nav_fragment);
-
         NavigationUI.setupWithNavController(binding.navView, navController);
 
     }

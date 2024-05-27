@@ -13,7 +13,7 @@
 
     <fragment
             android:id="@+id/navigation_eq"
-            android:name="com.hanamilink.ui.dashboard.DashboardFragment"
+            android:name="com.hanamilink.ui.eq.EqFragment"
             android:label="@string/title_eq"
             tools:layout="@layout/fragment_eq" />
 
