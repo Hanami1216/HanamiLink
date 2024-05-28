@@ -160,43 +160,22 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toEndOf="@id/btn_eq_reset" />
 
-        <!--<com.hanamilink.ui.widget.EqWaveView-->
-        <!--        android:id="@+id/wv_freq"-->
-        <!--        android:layout_width="0dp"-->
-        <!--        android:layout_height="64dp"-->
-        <!--        android:layout_marginBottom="8.5dp"-->
-        <!--        app:contentEndColor="@color/color_eq_wave_end"-->
-        <!--        app:contentStartColor="@color/color_eq_wave_start"-->
-        <!--        app:contentEndDisableColor="@color/gray_d4d4d4"-->
-        <!--        app:contentStartDisableColor="@color/gray_bbbbbb"-->
-        <!--        app:layout_constraintBottom_toTopOf="@id/btn_eq_mode"-->
-        <!--        app:layout_constraintEnd_toEndOf="parent"-->
-        <!--        app:layout_constraintStart_toStartOf="parent"-->
-        <!--        app:topLineColor="@color/color_eq_wave_top"-->
-        <!--        app:topLineDisableColor="@color/gray_bbbbbb"-->
-        <!--        />-->
 
 
         <com.hanamilink.ui.widget.ViewPager2RecycleView
                 android:id="@+id/rv_vsbs"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="6dp"
-                android:layout_marginBottom="12dp"
+                android:layout_width="336dp"
+                android:layout_height="334dp"
                 android:overScrollMode="never"
                 android:scrollbars="none"
-                android:background="@color/black_000000"
 
-                app:layout_constraintEnd_toEndOf="parent"
-
-                app:layout_constraintHorizontal_chainStyle="spread"
-                app:layout_constraintStart_toEndOf="@id/tv_gain_12"
-                app:layout_constraintTop_toBottomOf="@id/tv_main_volume"
                 tools:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                 tools:layout_height="320dp"
                 tools:listitem="@layout/item_eq_seekbar"
-                tools:spanCount="10" />
-
+                tools:spanCount="10"
+                app:layout_constraintTop_toBottomOf="@+id/tv_main_volume"
+                android:layout_marginTop="92dp"
+                app:layout_constraintEnd_toEndOf="parent" />
 
         <TextView
                 android:id="@+id/tv_gain_12"

@@ -59,34 +59,33 @@ public final class EqSeekBarAdapter extends BaseQuickAdapter<EqSeekBarBean, Base
      */
     @Override
     protected void convert(@NonNull BaseViewHolder helper, EqSeekBarBean item) {
-        //if (!getData().isEmpty()) {
-        //    int itemWidth = calculateItemWidth(getContext(), getData().size(), getRecyclerView().getWidth());
-        //    ViewGroup relativeLayout = helper.getView(R.id.cl_main);
-        //    ViewGroup.LayoutParams params = relativeLayout.getLayoutParams();
-        //
-        //    if (itemWidth != 0) {
-        //        params.width = itemWidth;
-        //        relativeLayout.setLayoutParams(params);
-        //    }
-        //}
+        if (!getData().isEmpty()) {
+            int itemWidth = calculateItemWidth(getContext(), getData().size(), getRecyclerView().getWidth());
+            ViewGroup relativeLayout = helper.getView(R.id.cl_main);
+            ViewGroup.LayoutParams params = relativeLayout.getLayoutParams();
 
+            if (itemWidth != 0) {
+                params.width = itemWidth;
+                relativeLayout.setLayoutParams(params);
+            }
+        }
         VerticalSeekBarView verticalSeekBarView = helper.getView(R.id.vsb_eq);
         verticalSeekBarView.setText(item.getFreq());  // 设置频率文本
         verticalSeekBarView.setValue(item.getValue());  // 设置SeekBar值
         verticalSeekBarView.setIndex(item.getIndex());  // 设置索引
-        //verticalSeekBarView.setEnable(!ban);  // 设置是否启用
-        //this.mEqInfo.getValue()[item.getIndex()] = (byte) item.getValue();  // 更新均衡器信息
-        //
-        //verticalSeekBarView.setValueListener((value, end) -> {
-        //    if (getItemPosition(item) < 0) {
-        //        return;
-        //    }
-        //    item.setValue(value);  // 更新数据项的值
-        //    this.mEqInfo.getValue()[item.getIndex()] = (byte) item.getValue();  // 更新均衡器信息
-        //    mValueChange.onChange(item.getIndex(), this.mEqInfo, end);  // 触发值变化监听器
-        //});
-        //
-        //verticalSeekBarView.setHoverListener(hover -> mHasHoverView = hover);  // 设置悬停监听器
+        verticalSeekBarView.setEnable(!ban);  // 设置是否启用
+        this.mEqInfo.getValue()[item.getIndex()] = (byte) item.getValue();  // 更新均衡器信息
+
+        verticalSeekBarView.setValueListener((value, end) -> {
+            if (getItemPosition(item) < 0) {
+                return;
+            }
+            item.setValue(value);  // 更新数据项的值
+            this.mEqInfo.getValue()[item.getIndex()] = (byte) item.getValue();  // 更新均衡器信息
+            mValueChange.onChange(item.getIndex(), this.mEqInfo, end);  // 触发值变化监听器
+        });
+
+        verticalSeekBarView.setHoverListener(hover -> mHasHoverView = hover);  // 设置悬停监听器
     }
 
     /**
